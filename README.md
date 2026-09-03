@@ -105,3 +105,56 @@ DJANGO_SETTINGS_MODULE=config.settings python -m django check
 - Keep Test Mode enabled until the entire order/webhook flow is verified.
 - Configure HTTPS for any deployed checkout and webhook endpoint.
 - Keep the catalog and transaction database private; only the browser-facing API should be public.
+
+# Project Architecture:
+
+                    AMAZON / APIFY DATA
+                           |
+                           v
+                    RAW DATA STORAGE
+                           |
+                           v
+                  EXTRACTION / ETL
+                           |
+                           v
+                 NORMALIZED DATA
+                           |
+                           v
+                    POSTGRESQL
+                           |
+          +----------------+----------------+
+          |                |                |
+          v                v                v
+       Products         Reviews           Media
+          |                |                |
+          |                |          +-----+-----+
+          |                |          |           |
+          |                |        Images      Video
+          |                |          |           |
+          |                |          v           v
+          |                |       Vision      Video Model
+          |                |       Model
+          |                |          |
+          +----------------+----------+
+                           |
+                           v
+              STRUCTURED + TEXTUAL
+                 REPRESENTATION
+                           |
+                           v
+                   QUALITY FILTERING
+                           |
+                           v
+                      EMBEDDINGS
+                           |
+                           v
+                     VECTOR DB(pg vector)
+                           |
+                           v
+                 HYBRID RETRIEVAL
+                           |
+                           v
+                    OLLAMA + (TOOL/OUTPUT SELECTOR(ReAct based) -> DIFFERENT DB'S WITH DIFFERENT SURFACE (LIKE AMAZON, FLIPKART , MYNTRA))
+                           |
+                           v
+                  AGENTIC COMMERCE
