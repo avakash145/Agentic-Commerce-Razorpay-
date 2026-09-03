@@ -1,0 +1,32 @@
+{
+  "source_records": 1806,
+  "invalid_records": 0,
+  "unique_asins": 1142,
+  "duplicate_records_collapsed": 664,
+  "ready_products": 620,
+  "partial_products": 522,
+  "quality_issue_counts": {
+    "missing_price_or_currency": 518,
+    "missing_reviews": 71,
+    "missing_category": 14
+  },
+  "price_source_counts": {
+    "product": 580,
+    "unavailable": 518,
+    "linked_variant": 44
+  },
+  "category_counts": {
+    "other": 271,
+    "keyboard": 79,
+    "monitor": 71,
+    "mobile": 95,
+    "laptop": 489,
+    "accessory": 10,
+    "desktop": 125,
+    "headphone": 1,
+    "tablet": 1
+  },
+  "ready_definition": "ASIN, title, price, currency, stock, category, and at least one image",
+  "excluded_by_category_kind": 0,
+  "allowed_category_kinds": null
+}

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Checkout | Agentic Commerce</title>
+
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+    ></script>
+
+
+    <style>
+
+        body {
+
+            background:
+                #f5f7fb;
+
+            color:
+                #111827;
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .checkout-navbar {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #3157e0,
+                    #2444bd
+                );
+
+            box-shadow:
+                0 4px 15px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.10
+                );
+        }
+
+
+        .agent-logo {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            border-radius:
+                10px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.15
+                );
+
+            color:
+                white;
+
+            font-weight:
+                800;
+
+            font-size:
+                20px;
+        }
+
+        .checkout-card {
+
+            background:
+                white;
+
+            border:
+                1px solid
+                #e1e5ec;
+
+            border-radius:
+                18px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.07
+                );
+
+            overflow:
+                hidden;
+        }
+
+        .product-image-container {
+
+            height:
+                360px;
+
+            background:
+                #f8fafc;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            position:
+                relative;
+        }
+
+
+        .product-image {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                contain;
+
+            padding:
+                30px;
+        }
+
+
+        .image-placeholder {
+
+            color:
+                #94a3b8;
+
+            text-align:
+                center;
+        }
+
+
+        .summary-title {
+
+            font-size:
+                24px;
+
+            font-weight:
+                800;
+
+            line-height:
+                1.35;
+        }
+
+
+        .asin {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+        }
+
+
+        .price {
+
+            font-size:
+                32px;
+
+            font-weight:
+                800;
+        }
+
+
+        .secure-box {
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid
+                #e2e8f0;
+
+            border-radius:
+                12px;
+
+            padding:
+                14px;
+        }
+
+
+        .pay-button {
+
+            height:
+                52px;
+
+            border-radius:
+                12px;
+
+            font-weight:
+                700;
+
+            font-size:
+                16px;
+        }
+
+
+        .status-box {
+
+            border-radius:
+                12px;
+
+            padding:
+                14px;
+
+            display:
+                none;
+        }
+
+
+        @media (
+            max-width: 768px
+        ) {
+
+            .product-image-container {
+
+                height:
+                    260px;
+            }
+
+
+            .summary-title {
+
+                font-size:
+                    20px;
+            }
+
+
+            .price {
+
+                font-size:
+                    27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<nav class="navbar navbar-dark checkout-navbar">
+
+    <div class="container py-2">
+        <div
+            class="d-flex align-items-center gap-3">
+            <div
+                class="agent-logo">
+                A
+            </div> <div><div class="fw-bold fs-5">Agentic Commerce
+                </div>
+
+                <small
+                    class="opacity-75"
+                >
+                    Secure Checkout
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="text-white small"
+        >
+
+            <i
+                class="bi bi-shield-check"
+            ></i>
+
+            Secure Payment
+
+        </div>
+
+    </div>
+
+</nav>
+
+<main
+    class="container py-5"
+>
+
+    <div
+        class="mb-4"
+    >
+
+        <a
+            href="/"
+            class="text-decoration-none"
+        >
+
+            <i
+                class="bi bi-arrow-left"
+            ></i>
+
+            Back to shopping
+
+        </a>
+
+
+        <h1
+            class="fw-bold mt-3 mb-1"
+        >
+            Checkout
+        </h1>
+
+
+        <p
+            class="text-secondary mb-0"
+        >
+            Review your product before payment.
+        </p>
+
+    </div>
+
+
+    <div
+        class="checkout-card"
+    >
+
+        <div
+            class="row g-0"
+        >
+
+
+            <div
+                class="col-lg-6"
+            >
+
+                <div
+                    class="product-image-container"
+                >
+
+                    <img
+                        id="productImage"
+                        class="product-image d-none"
+                        alt="Product"
+                    >
+
+
+                    <div
+                        id="imagePlaceholder"
+                        class="image-placeholder"
+                    >
+
+                        <i
+                            class="bi bi-image fs-1"
+                        ></i>
+
+                        <div>
+                            Loading product image...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                class="col-lg-6"
+            >
+
+                <div
+                    class="p-4 p-lg-5"
+                >
+
+
+                    <div
+                        class="text-primary fw-semibold small mb-2"
+                    >
+
+                        AGENT SELECTED PRODUCT
+
+                    </div>
+
+
+                    <h2
+                        id="productTitle"
+                        class="summary-title mb-3"
+                    >
+                        Loading product...
+                    </h2>
+
+
+                    <div
+                        id="productAsin"
+                        class="asin mb-4"
+                    ></div>
+
+
+                    <div
+                        class="mb-4"
+                    >
+
+                        <div
+                            id="productPrice"
+                            class="price"
+                        >
+                            --
+                        </div>
+
+
+                        <div
+                            id="priceNote"
+                            class="text-secondary small"
+                        ></div>
+
+                    </div>
+
+                    <hr>
+
+                    <div
+                        class="mb-4"
+                    >
+
+                        <h6
+                            class="fw-bold mb-3"
+                        >
+                            Order summary
+                        </h6>
+
+
+                        <div
+                            class="d-flex justify-content-between mb-2"
+                        >
+
+                            <span
+                                class="text-secondary"
+                            >
+                                Product
+                            </span>
+
+                            <span
+                                id="summaryPrice"
+                                class="fw-semibold"
+                            >
+                                --
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="d-flex justify-content-between mb-2"
+                        >
+
+                            <span
+                                class="text-secondary"
+                            >
+                                Quantity
+                            </span>
+
+                            <span>
+                                1
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="d-flex justify-content-between"
+                        >
+
+                            <span
+                                class="text-secondary"
+                            >
+                                Delivery
+                            </span>
+
+                            <span
+                                class="text-success fw-semibold"
+                            >
+                                Free
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="secure-box mb-4"
+                    >
+
+                        <div
+                            class="d-flex gap-3"
+                        >
+
+                            <i
+                                class="bi bi-shield-lock-fill text-success fs-4"
+                            ></i>
+
+                            <div>
+
+                                <div
+                                    class="fw-semibold"
+                                >
+                                    Secure payment
+                                </div>
+
+                                <div
+                                    class="small text-secondary"
+                                >
+                                    Payment is securely processed by Razorpay.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div
+                        id="statusBox"
+                        class="status-box alert"
+                    ></div>
+
+                    <button
+                        id="payButton"
+                        type="button"
+                        class="btn btn-primary w-100 pay-button"
+                    >
+
+                        <i
+                            class="bi bi-credit-card me-2"
+                        ></i>
+
+                        Pay with Razorpay
+
+                    </button>
+
+
+                    <div
+                        class="text-center text-secondary small mt-3"
+                    >
+
+                        <i
+                            class="bi bi-lock-fill"
+                        ></i>
+
+                        Secure encrypted payment
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const asin =
+    params.get(
+        "asin"
+    );
+
+
+const title =
+    params.get(
+        "title"
+    ) ||
+    "Product";
+
+
+const currency =
+    params.get(
+        "currency"
+    ) ||
+    "INR";
+
+
+const priceINR =
+    params.get(
+        "price_inr"
+    );
+
+
+const originalPrice =
+    params.get(
+        "price"
+    );
+
+
+const image =
+    params.get(
+        "image"
+    );
+
+
+let checkoutOrder = null;
+
+
+const productTitle =
+    document.getElementById(
+        "productTitle"
+    );
+
+
+const productAsin =
+    document.getElementById(
+        "productAsin"
+    );
+
+
+const productPrice =
+    document.getElementById(
+        "productPrice"
+    );
+
+
+const summaryPrice =
+    document.getElementById(
+        "summaryPrice"
+    );
+
+
+const priceNote =
+    document.getElementById(
+        "priceNote"
+    );
+
+
+const productImage =
+    document.getElementById(
+        "productImage"
+    );
+
+
+const imagePlaceholder =
+    document.getElementById(
+        "imagePlaceholder"
+    );
+
+
+const payButton =
+    document.getElementById(
+        "payButton"
+    );
+
+
+const statusBox =
+    document.getElementById(
+        "statusBox"
+    );
+
+productTitle.textContent =
+    title;
+
+
+productAsin.textContent =
+    asin
+        ? "ASIN: " + asin
+        : "";
+
+
+if (image) {
+
+    let imageSource = image;
+    try {
+        new URL(image);
+        imageSource = "/api/image-proxy?url=" + encodeURIComponent(image);
+    } catch (error) {
+        // Keep local/static image paths unchanged.
+    }
+
+    productImage.src =
+        imageSource;
+
+    productImage.alt =
+        title;
+
+
+    productImage.onload =
+        function() {
+
+            productImage.classList.remove(
+                "d-none"
+            );
+
+            imagePlaceholder.classList.add(
+                "d-none"
+            );
+
+        };
+
+
+    productImage.onerror =
+        function() {
+
+            productImage.classList.add(
+                "d-none"
+            );
+
+            imagePlaceholder.classList.remove(
+                "d-none"
+            );
+
+            imagePlaceholder.innerHTML = `
+
+                <i class="bi bi-image fs-1"></i>
+
+                <div>
+                    Image unavailable
+                </div>
+
+            `;
+
+        };
+
+} else {
+
+    imagePlaceholder.innerHTML = `
+
+        <i class="bi bi-image fs-1"></i>
+
+        <div>
+            Image unavailable
+        </div>
+
+    `;
+
+}
+
+function currencySymbol(
+    value
+) {
+
+    const symbols = {
+
+        INR: "₹",
+
+        USD: "$",
+
+        EUR: "€",
+
+        GBP: "£",
+
+        JPY: "¥",
+
+        CNY: "¥",
+
+        CAD: "C$",
+
+        AUD: "A$"
+
+    };
+
+
+    return (
+        symbols[
+            String(
+                value || ""
+            ).toUpperCase()
+        ]
+        ||
+        value
+        ||
+        ""
+    );
+}
+
+
+function formatMoney(
+    value,
+    currencyValue
+) {
+
+    const number =
+        Number(value);
+
+
+    if (
+        !Number.isFinite(
+            number
+        )
+    ) {
+
+        return "--";
+
+    }
+
+
+    return (
+
+        currencySymbol(
+            currencyValue
+        )
+
+        +
+
+        number.toLocaleString(
+            "en-IN",
+            {
+                maximumFractionDigits:
+                    2
+            }
+        )
+
+    );
+}
+
+
+if (priceINR) {
+
+    productPrice.textContent =
+        formatMoney(
+            priceINR,
+            "INR"
+        );
+
+
+    summaryPrice.textContent =
+        formatMoney(
+            priceINR,
+            "INR"
+        );
+
+
+    if (
+        originalPrice
+        &&
+        currency
+        &&
+        currency.toUpperCase()
+            !== "INR"
+    ) {
+
+        priceNote.textContent =
+            "Converted from "
+            +
+            formatMoney(
+                originalPrice,
+                currency
+            );
+
+    }
+
+} else if (originalPrice) {
+
+    productPrice.textContent =
+        formatMoney(
+            originalPrice,
+            currency
+        );
+
+
+    summaryPrice.textContent =
+        formatMoney(
+            originalPrice,
+            currency
+        );
+
+
+    priceNote.textContent =
+        "Original catalog price";
+
+}
+
+
+function showStatus(
+    message,
+    type
+) {
+
+    statusBox.className =
+        "status-box alert alert-" +
+        type;
+
+
+    statusBox.textContent =
+        message;
+
+
+    statusBox.style.display =
+        "block";
+
+}
+
+payButton.addEventListener(
+    "click",
+    async function() {
+
+        if (!asin) {
+
+            showStatus(
+                "Product information is missing.",
+                "danger"
+            );
+
+            return;
+
+        }
+
+
+        payButton.disabled =
+            true;
+
+
+        payButton.innerHTML = `
+
+            <span
+                class="spinner-border spinner-border-sm me-2"
+            ></span>
+
+            Opening secure checkout...
+
+        `;
+
+
+        try {
+
+            const orderResponse = await fetch(
+                "/api/checkout/create-order",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ asin: asin })
+                }
+            );
+
+            const orderData = await orderResponse.json();
+
+            if (!orderResponse.ok) {
+                throw new Error(
+                    orderData.detail || "Unable to create a Razorpay order"
+                );
+            }
+
+            checkoutOrder = orderData;
+
+            // Replace query-string display values with server-authoritative
+            // values before opening the payment modal.
+            if (checkoutOrder.title) {
+                productTitle.textContent = checkoutOrder.title;
+            }
+            if (checkoutOrder.amount_inr !== undefined) {
+                const confirmedPrice = formatMoney(
+                    checkoutOrder.amount_inr,
+                    "INR"
+                );
+                productPrice.textContent = confirmedPrice;
+                summaryPrice.textContent = confirmedPrice;
+                priceNote.textContent = "Amount confirmed by server";
+            }
+
+            const options = {
+                key: checkoutOrder.key_id,
+                amount: checkoutOrder.amount,
+                currency: checkoutOrder.currency,
+                name: "Agentic Commerce",
+                description: checkoutOrder.title || title,
+                order_id: checkoutOrder.order_id,
+
+                handler: async function(response) {
+                    showStatus(
+                        "Payment received. Verifying securely...",
+                        "info"
+                    );
+
+                    try {
+                        const verifyResponse = await fetch(
+                            "/api/checkout/verify-payment",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature
+                                })
+                            }
+                        );
+
+                        const verification = await verifyResponse.json();
+
+                        if (!verifyResponse.ok) {
+                            throw new Error(
+                                verification.detail || "Payment verification failed"
+                            );
+                        }
+
+                        showStatus(
+                            "Payment verified successfully. Your order is confirmed.",
+                            "success"
+                        );
+                        payButton.innerHTML = `
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Payment verified
+                        `;
+                    } catch (error) {
+                        console.error("Verification error:", error);
+                        showStatus(
+                            "Payment received, but verification needs attention. Please save your payment ID: "
+                            + response.razorpay_payment_id,
+                            "warning"
+                        );
+                        payButton.disabled = false;
+                        payButton.innerHTML = `
+                            <i class="bi bi-arrow-repeat me-2"></i>
+                            Try verification again
+                        `;
+                    }
+                },
+
+                modal: {
+                    ondismiss: function() {
+                        payButton.disabled = false;
+                        payButton.innerHTML = `
+                            <i class="bi bi-credit-card me-2"></i>
+                            Pay with Razorpay
+                        `;
+                    }
+                }
+            };
+
+            const razorpay =
+                new Razorpay(
+                    options
+                );
+
+
+            razorpay.on(
+                "payment.failed",
+                function(response) {
+
+                    console.error(
+                        "Payment failed:",
+                        response
+                    );
+
+
+                    showStatus(
+                        "Payment failed. Please try again.",
+                        "danger"
+                    );
+
+
+                    payButton.disabled =
+                        false;
+
+
+                    payButton.innerHTML = `
+
+                        <i
+                            class="bi bi-credit-card me-2"
+                        ></i>
+
+                        Pay with Razorpay
+
+                    `;
+
+                }
+            );
+
+
+            razorpay.open();
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            showStatus(error.message || "Unable to open Razorpay checkout.", "danger");
+
+
+            payButton.disabled =
+                false;
+
+
+            payButton.innerHTML = `
+
+                <i
+                    class="bi bi-credit-card me-2"
+                ></i>
+
+                Pay with Razorpay
+
+            `;
+
+        }
+
+    }
+);
+
+</script>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+</body>
+
+</html>
