@@ -1,12 +1,8 @@
 import os
 import re
-
 from dotenv import load_dotenv
-
 from langchain_openai import ChatOpenAI
-
 from app.agent.intent import CommerceIntent
-
 
 load_dotenv()
 
@@ -15,9 +11,7 @@ class IntentParser:
 
     def __init__(self):
 
-        api_key = os.getenv(
-            "OLLAMA_API_KEY"
-        )
+        api_key = os.getenv("OLLAMA_API_KEY")
 
         # The hosted model is an enhancement, not a reason for the
         # shopping experience to be unavailable.  A conservative local
@@ -29,31 +23,18 @@ class IntentParser:
 
         model = os.getenv(
             "OLLAMA_MODEL",
-            "gpt-oss:120b"
+            "nemotron-3-ultra"
         )
 
         self.llm = ChatOpenAI(
-
             model=model,
-
             temperature=0,
-
             timeout=float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "15")),
-
             max_retries=1,
-
             api_key=api_key,
+            base_url=("https://ollama.com/v1"))
 
-            base_url=(
-                "https://ollama.com/v1"
-            )
-        )
-
-        self.structured_llm = (
-            self.llm.with_structured_output(
-                CommerceIntent
-            )
-        )
+        self.structured_llm = (self.llm.with_structured_output(CommerceIntent))
 
     @staticmethod
     def _amount(match: re.Match) -> float:

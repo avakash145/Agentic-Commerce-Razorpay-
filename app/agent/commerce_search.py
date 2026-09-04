@@ -13,12 +13,8 @@ class CommerceSearchService:
 
     def __init__(self, search_service=None, filter_service=None):
 
-        self.intent_parser = (
-            IntentParser()
-        )
-
+        self.intent_parser = (IntentParser())
         self.search_service = search_service or CatalogSearchService()
-
         self.filter_service = filter_service or ProductFilterService()
 
     # SEARCH
@@ -29,7 +25,6 @@ class CommerceSearchService:
         retrieval_limit: int = 20
     ):
 
-        # STEP 1
         # PARSE USER INTENT
 
         intent = (
@@ -37,7 +32,6 @@ class CommerceSearchService:
                 user_query
             )
         )
-        # STEP 2
         # BUILD SEARCH QUERY
 
         search_query = (
@@ -47,7 +41,6 @@ class CommerceSearchService:
         if not search_query:
 
             search_query = user_query
-        # STEP 3
         # HYBRID RETRIEVAL
 
         # Retrieve a wider pool before applying hard constraints.  A narrow
@@ -67,7 +60,6 @@ class CommerceSearchService:
             )
         )
 
-        # STEP 4
         # DETERMINISTIC FILTERING
         products = (
             self.filter_service
@@ -113,7 +105,6 @@ class CommerceSearchService:
             )
         )
 
-        # STEP 5
         # RETURN BOTH INTENT AND PRODUCTS
         return {
             "intent": intent,
