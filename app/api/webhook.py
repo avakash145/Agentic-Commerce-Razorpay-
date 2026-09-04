@@ -482,7 +482,7 @@ async def razorpay_webhook(request: Request):
             detail="Webhook processing failed"
         )
 
-    # 19. CLOSE DATABASE
+    # 19. CLOSE DATABASEz
 
     finally:
 
