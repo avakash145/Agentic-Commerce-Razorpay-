@@ -158,3 +158,102 @@ DJANGO_SETTINGS_MODULE=config.settings python -m django check
                            |
                            v
                   AGENTIC COMMERCE
+
+-----------------------------------+-------------------------------------------------------------------------------------+------------------------------
+
+
+
+                    ┌──────────────────────────┐
+                    │          USER            │
+                    │  Natural Language Query  │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │      AI AGENT LAYER      │
+                    │                          │
+                    │  Intent Parser           │
+                    │  Commerce Search Agent   │
+                    │  Growth / Recommendation │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+              ┌────────────────────────────────────┐
+              │       INTELLIGENT DISCOVERY        │
+              │                                    │
+              │  ┌────────────┐  ┌──────────────┐  │
+              │  │  Semantic  │  │   Lexical    │  │
+              │  │  Search    │  │    Search    │  │
+              │  └─────┬──────┘  └──────┬───────┘  │
+              │        └────────┬────────┘         │
+              │                 ▼                  │
+              │          Hybrid Retrieval          │
+              │          (RRF Ranking)             │
+              └────────────────┬───────────────────┘
+                               │
+                               ▼
+              ┌────────────────────────────────────┐
+              │       MULTIMODAL CATALOG           │
+              │                                    │
+              │  Text + Images + Video             │
+              │  OpenCLIP Embeddings               │
+              │  PostgreSQL + pgvector             │
+              └────────────────┬───────────────────┘
+                               │
+                               ▼
+              ┌────────────────────────────────────┐
+              │    DETERMINISTIC COMMERCE LAYER    │
+              │                                    │
+              │  Price / Budget                    │
+              │  Stock                             │
+              │  Rating                            │
+              │  Category                          │
+              │  RAM / Storage / GPU / CPU         │
+              │  Currency / FX                     │
+              └────────────────┬───────────────────┘
+                               │
+                               ▼
+                    ┌──────────────────────────┐
+                    │    POLICY ENGINE         │
+                    │                          │
+                    │  Purchase Rules          │
+                    │  Budget Validation       │
+                    │  Stock Validation        │
+                    │  Confirmation Rules      │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │    PAYMENT SECURITY      │
+                    │                          │
+                    │  Payment Mandate         │
+                    │  Ed25519 Signature       │
+                    │  Authorization Gateway   │
+                    │  Action Gateway          │
+                    │  Idempotency             │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │      RAZORPAY            │
+                    │   Test Payment Gateway   │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │       WEBHOOKS           |
+                    │                          │
+                    │  HMAC Verification       │
+                    │  Event Idempotency       │
+                    │  Payment State Machine   │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+              ┌────────────────────────────────────┐
+              │       TRANSACTION + AUDIT DB       │
+              │                                    │
+              │  Transactions                      │
+              │  Webhook Events                    │
+              │  Audit Events                      │
+              │  Mandates                          │
+              └────────────────────────────────────┘
