@@ -1,1166 +1,1586 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout & Shopping Cart | Amazon Agentic Store</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Checkout | Agentic Commerce</title>
-
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
-
-    <script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-    ></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
+        :root {
+            --amz-dark: #131921;
+            --amz-nav: #232f3e;
+            --amz-yellow: #ffd814;
+            --amz-yellow-hover: #f7ca00;
+            --amz-orange: #f08804;
+            --amz-orange-hover: #e07e00;
+            --diamond-color: #00d2ff;
+        }
 
         body {
-
-            background:
-                #f5f7fb;
-
-            color:
-                #111827;
-
-            font-family:
-                Inter,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+            background-color: #eaeded;
+            color: #0f1111;
+            font-family: "Amazon Ember", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
         }
 
-        .checkout-navbar {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #3157e0,
-                    #2444bd
-                );
-
-            box-shadow:
-                0 4px 15px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.10
-                );
+        /* NAVBAR */
+        .amz-header {
+            background-color: var(--amz-dark);
+            color: white;
+            padding: 10px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .nav-logo {
+            font-weight: 800;
+            font-size: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-logo:hover {
+            color: var(--amz-yellow);
+        }
+        .nav-chip {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            transition: border 0.15s;
+        }
+        .nav-chip:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: white;
+        }
+        .diamond-chip {
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            color: #7dd3fc;
+            font-weight: 700;
+        }
+        .wallet-chip {
+            background: rgba(255, 216, 20, 0.15);
+            border: 1px solid rgba(255, 216, 20, 0.35);
+            color: #fde047;
+            font-weight: 700;
         }
 
-
-        .agent-logo {
-
-            width:
-                42px;
-
-            height:
-                42px;
-
-            border-radius:
-                10px;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.15
-                );
-
-            color:
-                white;
-
-            font-weight:
-                800;
-
-            font-size:
-                20px;
+        /* MAIN CONTENT */
+        .checkout-container {
+            max-width: 1240px;
+            margin: 24px auto;
+            padding: 0 16px;
         }
 
-        .checkout-card {
-
-            background:
-                white;
-
-            border:
-                1px solid
-                #e1e5ec;
-
-            border-radius:
-                18px;
-
-            box-shadow:
-                0 8px 30px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.07
-                );
-
-            overflow:
-                hidden;
+        .card-box {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #d5d9d9;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
 
-        .product-image-container {
-
-            height:
-                360px;
-
-            background:
-                #f8fafc;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            position:
-                relative;
+        /* CART LIST ITEM */
+        .cart-item-row {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e7e7e7;
+        }
+        .cart-item-row:last-child {
+            border-bottom: none;
+        }
+        .cart-item-img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+        .cart-item-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #007185;
+            text-decoration: none;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        .cart-item-title:hover {
+            color: #c7511f;
+        }
+        .cart-item-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f1111;
         }
 
-
-        .product-image {
-
-            width:
-                100%;
-
-            height:
-                100%;
-
-            object-fit:
-                contain;
-
-            padding:
-                30px;
+        /* QUANTITY CONTROLLER (Window for Quantity) */
+        .quantity-window {
+            display: inline-flex;
+            align-items: center;
+            background: #f0f2f2;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(15,17,17,0.15);
+        }
+        .qty-btn {
+            background: #f0f2f2;
+            border: none;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0f1111;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .qty-btn:hover {
+            background: #e3e6e6;
+        }
+        .qty-input {
+            width: 44px;
+            height: 32px;
+            border: none;
+            border-left: 1px solid #d5d9d9;
+            border-right: 1px solid #d5d9d9;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            background: white;
+            color: #0f1111;
+        }
+        .qty-input:focus {
+            outline: none;
         }
 
-
-        .image-placeholder {
-
-            color:
-                #94a3b8;
-
-            text-align:
-                center;
+        /* SUMMARY SIDEBAR */
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #d5d9d9;
+            padding: 24px;
+            position: sticky;
+            top: 80px;
+        }
+        .btn-proceed-pay {
+            background: var(--amz-yellow);
+            border: 1px solid #fcd200;
+            border-radius: 20px;
+            padding: 12px;
+            font-weight: 700;
+            color: #0f1111;
+            width: 100%;
+            font-size: 15px;
+            box-shadow: 0 2px 5px rgba(213,217,217,0.5);
+            transition: all 0.15s;
+        }
+        .btn-proceed-pay:hover {
+            background: var(--amz-yellow-hover);
+        }
+        .btn-wallet-pay {
+            background: #10b981;
+            color: white;
+            border: 1px solid #059669;
+            border-radius: 20px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            font-size: 15px;
+            transition: all 0.15s;
+        }
+        .btn-wallet-pay:hover {
+            background: #059669;
+            color: white;
         }
 
-
-        .summary-title {
-
-            font-size:
-                24px;
-
-            font-weight:
-                800;
-
-            line-height:
-                1.35;
+        /* REWARDS & WALLET CHECKBOXES */
+        .rewards-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
         }
 
-
-        .asin {
-
-            color:
-                #94a3b8;
-
-            font-size:
-                12px;
+        /* EMPTY CART STATE */
+        .empty-cart-wrap {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .empty-cart-img {
+            max-width: 180px;
+            opacity: 0.85;
+            margin-bottom: 20px;
         }
 
-
-        .price {
-
-            font-size:
-                32px;
-
-            font-weight:
-                800;
+        /* TRACKING PROGRESS BAR */
+        .tracking-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 25px 0 15px 0;
         }
-
-
-        .secure-box {
-
-            background:
-                #f8fafc;
-
-            border:
-                1px solid
-                #e2e8f0;
-
-            border-radius:
-                12px;
-
-            padding:
-                14px;
+        .tracking-timeline::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 20px;
+            right: 20px;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
         }
-
-
-        .pay-button {
-
-            height:
-                52px;
-
-            border-radius:
-                12px;
-
-            font-weight:
-                700;
-
-            font-size:
-                16px;
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
         }
-
-
-        .status-box {
-
-            border-radius:
-                12px;
-
-            padding:
-                14px;
-
-            display:
-                none;
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 auto 6px auto;
+            border: 2px solid white;
         }
-
-
-        @media (
-            max-width: 768px
-        ) {
-
-            .product-image-container {
-
-                height:
-                    260px;
-            }
-
-
-            .summary-title {
-
-                font-size:
-                    20px;
-            }
-
-
-            .price {
-
-                font-size:
-                    27px;
-            }
-
+        .timeline-step.active .step-circle {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
         }
-
+        .step-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+        }
+        .timeline-step.active .step-label {
+            color: #0f1111;
+        }
+        .audit-log-item {
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
     </style>
-
 </head>
-
 
 <body>
 
-
-<nav class="navbar navbar-dark checkout-navbar">
-
-    <div class="container py-2">
-        <div
-            class="d-flex align-items-center gap-3">
-            <div
-                class="agent-logo">
-                A
-            </div> <div><div class="fw-bold fs-5">Agentic Commerce
-                </div>
-
-                <small
-                    class="opacity-75"
-                >
-                    Secure Checkout
-                </small>
-
-            </div>
-
+    <!-- NAVBAR -->
+    <header class="amz-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a href="/store" class="nav-logo">
+                <i class="bi bi-cpu-fill text-warning fs-4"></i>
+                <span>Amazon <small class="text-warning fw-normal" style="font-size: 12px;">Agentic</small></span>
+            </a>
+            <a href="/store" class="nav-chip text-white-50">
+                <i class="bi bi-arrow-left"></i> Continue Shopping
+            </a>
         </div>
 
+        <div class="d-flex align-items-center gap-2">
+            <!-- Diamond Reward Chip -->
+            <a href="javascript:void(0)" class="nav-chip diamond-chip" onclick="openRewardsModal()" title="View Diamond Rewards">
+                <i class="bi bi-gem"></i> <span id="headerDiamonds">500</span> Diamonds
+            </a>
 
-        <div
-            class="text-white small"
-        >
+            <!-- Wallet Balance Chip -->
+            <a href="javascript:void(0)" class="nav-chip wallet-chip" onclick="openWalletModal()" title="Amazon Wallet">
+                <i class="bi bi-wallet2"></i> ₹<span id="headerWallet">5,000.00</span>
+            </a>
 
-            <i
-                class="bi bi-shield-check"
-            ></i>
+            <!-- Orders & Tracking -->
+            <a href="javascript:void(0)" class="nav-chip" onclick="openOrdersModal()">
+                <i class="bi bi-box-seam me-1"></i> Returns & Orders
+            </a>
 
-            Secure Payment
+            <!-- User Profile Dropdown -->
+            <div class="dropdown">
+                <button class="nav-chip dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i> <span id="headerUserName">Alex</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><h6 class="dropdown-header" id="menuUserEmail">alex@amazon.com</h6></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openOrdersModal()"><i class="bi bi-box-seam me-2"></i>Your Orders & Tracking</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openWalletModal()"><i class="bi bi-wallet2 me-2"></i>Amazon Wallet</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openRewardsModal()"><i class="bi bi-gem me-2 text-info"></i>Diamond Rewards</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openProfileModal()"><i class="bi bi-geo-alt me-2"></i>Delivery Address</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="openLoginModal()"><i class="bi bi-box-arrow-right me-2"></i>Sign In / Switch Account</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
+    <!-- CHECKOUT CONTAINER -->
+    <div class="checkout-container">
+        <!-- Breadcrumb / Header message -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h4 class="fw-bold mb-0">Shopping Cart & Secure Checkout</h4>
+                <small class="text-secondary"><i class="bi bi-shield-check text-success me-1"></i>Protected by 256-bit End-to-End Encryption & Razorpay</small>
+            </div>
+            <div class="badge bg-success py-2 px-3">
+                <i class="bi bi-truck me-1"></i>FREE Prime Delivery Active
+            </div>
         </div>
 
-    </div>
-
-</nav>
-
-<main
-    class="container py-5"
->
-
-    <div
-        class="mb-4"
-    >
-
-        <a
-            href="/"
-            class="text-decoration-none"
-        >
-
-            <i
-                class="bi bi-arrow-left"
-            ></i>
-
-            Back to shopping
-
-        </a>
-
-
-        <h1
-            class="fw-bold mt-3 mb-1"
-        >
-            Checkout
-        </h1>
-
-
-        <p
-            class="text-secondary mb-0"
-        >
-            Review your product before payment.
-        </p>
-
-    </div>
-
-
-    <div
-        class="checkout-card"
-    >
-
-        <div
-            class="row g-0"
-        >
-
-
-            <div
-                class="col-lg-6"
-            >
-
-                <div
-                    class="product-image-container"
-                >
-
-                    <img
-                        id="productImage"
-                        class="product-image d-none"
-                        alt="Product"
-                    >
-
-
-                    <div
-                        id="imagePlaceholder"
-                        class="image-placeholder"
-                    >
-
-                        <i
-                            class="bi bi-image fs-1"
-                        ></i>
-
-                        <div>
-                            Loading product image...
+        <div class="row g-4">
+            <!-- LEFT: CHECKOUT LIST (Window for Quantity, Items, CRUD) -->
+            <div class="col-lg-8">
+                <!-- Delivery Address Box -->
+                <div class="card-box mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                            <div>
+                                <span class="fw-bold">Delivering to <span id="deliveryName">Alex Johnson</span></span> - 
+                                <span id="deliveryAddress" class="text-secondary small">221B Baker Street, Tech Park, Bengaluru 560001</span>
+                            </div>
                         </div>
-
+                        <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="openProfileModal()">Change</button>
                     </div>
-
                 </div>
 
-            </div>
-
-            <div
-                class="col-lg-6"
-            >
-
-                <div
-                    class="p-4 p-lg-5"
-                >
-
-
-                    <div
-                        class="text-primary fw-semibold small mb-2"
-                    >
-
-                        AGENT SELECTED PRODUCT
-
+                <!-- Products Checkout List -->
+                <div class="card-box">
+                    <div class="d-flex justify-content-between align-items-center pb-2 border-bottom mb-3">
+                        <h5 class="fw-bold mb-0">Items in Your Cart (<span id="cartItemsCount">0</span>)</h5>
+                        <div class="text-end small text-secondary">Price</div>
                     </div>
 
-
-                    <h2
-                        id="productTitle"
-                        class="summary-title mb-3"
-                    >
-                        Loading product...
-                    </h2>
-
-
-                    <div
-                        id="productAsin"
-                        class="asin mb-4"
-                    ></div>
-
-
-                    <div
-                        class="mb-4"
-                    >
-
-                        <div
-                            id="productPrice"
-                            class="price"
-                        >
-                            --
+                    <!-- Items Container -->
+                    <div id="checkoutItemsList">
+                        <!-- Loaded dynamically via JS -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <div class="mt-2 text-secondary">Loading your checkout list...</div>
                         </div>
+                    </div>
 
+                    <!-- Subtotal Footer in List -->
+                    <div class="text-end pt-3 border-top" id="listSubtotalRow" style="display: none;">
+                        <span class="fs-6">Subtotal (<span id="footerCount">0</span> items): </span>
+                        <span class="fs-5 fw-bold text-danger" id="footerSubtotal">₹0.00</span>
+                    </div>
+                </div>
 
-                        <div
-                            id="priceNote"
-                            class="text-secondary small"
-                        ></div>
+                <!-- Buy Again Shelf in Checkout -->
+                <div class="card-box" id="checkoutBuyAgainBox" style="display: none;">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-arrow-repeat text-primary me-2"></i>Buy Again From Previous Orders</h6>
+                    <div class="row g-2" id="checkoutBuyAgainGrid"></div>
+                </div>
+            </div>
 
+            <!-- RIGHT: PAYMENT & REWARDS SUMMARY -->
+            <div class="col-lg-4">
+                <div class="summary-card shadow-sm">
+                    <!-- Diamond Rewards Banner -->
+                    <div class="rewards-box">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold small text-info"><i class="bi bi-gem me-1"></i>Diamond Rewards</span>
+                            <span class="badge bg-primary text-white" id="summaryDiamondsBadge">500 💎</span>
+                        </div>
+                        <div class="form-check form-switch small">
+                            <input class="form-check-input" type="checkbox" id="checkUseDiamonds" onchange="recalculateSummary()">
+                            <label class="form-check-label fw-semibold" for="checkUseDiamonds">
+                                Redeem 100 Diamonds for <strong>₹100 Instant Off</strong>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Wallet Pay Option -->
+                    <div class="rewards-box">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold small text-success"><i class="bi bi-wallet2 me-1"></i>Amazon Wallet</span>
+                            <span class="badge bg-success text-white" id="summaryWalletBadge">₹5,000.00</span>
+                        </div>
+                        <div class="form-check form-switch small">
+                            <input class="form-check-input" type="checkbox" id="checkUseWallet" onchange="recalculateSummary()">
+                            <label class="form-check-label fw-semibold" for="checkUseWallet">
+                                Pay with Wallet Balance (1-Click Instant)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Order Price Breakdown -->
+                    <h6 class="fw-bold mb-3">Order Summary</h6>
+
+                    <div class="d-flex justify-content-between mb-2 small text-secondary">
+                        <span>Items Subtotal:</span>
+                        <span id="breakdownSubtotal" class="text-dark fw-bold">₹0.00</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small text-secondary">
+                        <span>Delivery:</span>
+                        <span class="text-success fw-bold">FREE Prime</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small text-success" id="diamondDiscountRow" style="display: none;">
+                        <span>💎 Diamonds Discount:</span>
+                        <span id="breakdownDiamondDiscount">-₹0.00</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small text-primary" id="walletDeductionRow" style="display: none;">
+                        <span>👛 Wallet Applied:</span>
+                        <span id="breakdownWalletDeduction">-₹0.00</span>
                     </div>
 
                     <hr>
 
-                    <div
-                        class="mb-4"
-                    >
-
-                        <h6
-                            class="fw-bold mb-3"
-                        >
-                            Order summary
-                        </h6>
-
-
-                        <div
-                            class="d-flex justify-content-between mb-2"
-                        >
-
-                            <span
-                                class="text-secondary"
-                            >
-                                Product
-                            </span>
-
-                            <span
-                                id="summaryPrice"
-                                class="fw-semibold"
-                            >
-                                --
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            class="d-flex justify-content-between mb-2"
-                        >
-
-                            <span
-                                class="text-secondary"
-                            >
-                                Quantity
-                            </span>
-
-                            <span>
-                                1
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            class="d-flex justify-content-between"
-                        >
-
-                            <span
-                                class="text-secondary"
-                            >
-                                Delivery
-                            </span>
-
-                            <span
-                                class="text-success fw-semibold"
-                            >
-                                Free
-                            </span>
-
-                        </div>
-
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold fs-5">Order Total:</span>
+                        <span class="fw-bold fs-4 text-danger" id="breakdownFinalTotal">₹0.00</span>
                     </div>
 
-
-                    <div
-                        class="secure-box mb-4"
-                    >
-
-                        <div
-                            class="d-flex gap-3"
-                        >
-
-                            <i
-                                class="bi bi-shield-lock-fill text-success fs-4"
-                            ></i>
-
-                            <div>
-
-                                <div
-                                    class="fw-semibold"
-                                >
-                                    Secure payment
-                                </div>
-
-                                <div
-                                    class="small text-secondary"
-                                >
-                                    Payment is securely processed by Razorpay.
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div
-                        id="statusBox"
-                        class="status-box alert"
-                    ></div>
-
-                    <button
-                        id="payButton"
-                        type="button"
-                        class="btn btn-primary w-100 pay-button"
-                    >
-
-                        <i
-                            class="bi bi-credit-card me-2"
-                        ></i>
-
-                        Pay with Razorpay
-
-                    </button>
-
-
-                    <div
-                        class="text-center text-secondary small mt-3"
-                    >
-
-                        <i
-                            class="bi bi-lock-fill"
-                        ></i>
-
-                        Secure encrypted payment
-
+                    <!-- Diamonds Earn Message -->
+                    <div class="p-2 mb-3 bg-light rounded text-center small border">
+                        <i class="bi bi-stars text-warning me-1"></i>You will earn <strong class="text-primary" id="earnDiamondsCount">+0</strong> Diamonds on this order!
                     </div>
 
+                    <!-- Status Notification Box -->
+                    <div id="statusBox" class="alert alert-info py-2 small mb-3" style="display: none;"></div>
+
+                    <!-- Primary Action Buttons -->
+                    <div id="paymentActionButtons">
+                        <button id="btnPayWallet" class="btn-wallet-pay mb-2" onclick="placeOrderWithWallet()" style="display: none;">
+                            <i class="bi bi-wallet2 me-2"></i>Pay with Wallet Balance
+                        </button>
+
+                        <button id="payButton" class="btn-proceed-pay" onclick="placeOrderWithRazorpay()">
+                            <i class="bi bi-credit-card me-2"></i>Pay with Razorpay
+                        </button>
+                    </div>
+
+                    <div class="text-center text-muted small mt-3" style="font-size: 11px;">
+                        <i class="bi bi-lock-fill me-1"></i>By placing your order, you agree to Amazon Agentic's conditions of use and privacy notice.
+                    </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-</main>
-
-
-<script>
-
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
-
-
-const asin =
-    params.get(
-        "asin"
-    );
-
-
-const title =
-    params.get(
-        "title"
-    ) ||
-    "Product";
-
-
-const currency =
-    params.get(
-        "currency"
-    ) ||
-    "INR";
-
-
-const priceINR =
-    params.get(
-        "price_inr"
-    );
-
-
-const originalPrice =
-    params.get(
-        "price"
-    );
-
-
-const image =
-    params.get(
-        "image"
-    );
-
-
-let checkoutOrder = null;
-
-
-const productTitle =
-    document.getElementById(
-        "productTitle"
-    );
-
-
-const productAsin =
-    document.getElementById(
-        "productAsin"
-    );
-
-
-const productPrice =
-    document.getElementById(
-        "productPrice"
-    );
-
-
-const summaryPrice =
-    document.getElementById(
-        "summaryPrice"
-    );
-
-
-const priceNote =
-    document.getElementById(
-        "priceNote"
-    );
-
-
-const productImage =
-    document.getElementById(
-        "productImage"
-    );
-
-
-const imagePlaceholder =
-    document.getElementById(
-        "imagePlaceholder"
-    );
-
-
-const payButton =
-    document.getElementById(
-        "payButton"
-    );
-
-
-const statusBox =
-    document.getElementById(
-        "statusBox"
-    );
-
-productTitle.textContent =
-    title;
-
-
-productAsin.textContent =
-    asin
-        ? "ASIN: " + asin
-        : "";
-
-
-if (image) {
-
-    let imageSource = image;
-    try {
-        new URL(image);
-        imageSource = "/api/image-proxy?url=" + encodeURIComponent(image);
-    } catch (error) {
-        // Keep local/static image paths unchanged.
-    }
-
-    productImage.src =
-        imageSource;
-
-    productImage.alt =
-        title;
-
-
-    productImage.onload =
-        function() {
-
-            productImage.classList.remove(
-                "d-none"
-            );
-
-            imagePlaceholder.classList.add(
-                "d-none"
-            );
-
-        };
-
-
-    productImage.onerror =
-        function() {
-
-            productImage.classList.add(
-                "d-none"
-            );
-
-            imagePlaceholder.classList.remove(
-                "d-none"
-            );
-
-            imagePlaceholder.innerHTML = `
-
-                <i class="bi bi-image fs-1"></i>
-
-                <div>
-                    Image unavailable
+    <!-- MODAL 1: YOUR ORDERS & LIVE TRACKING LOGS -->
+    <div class="modal fade" id="ordersModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-box-seam me-2 text-warning"></i>Your Orders & Live Tracking</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-
-            `;
-
-        };
-
-} else {
-
-    imagePlaceholder.innerHTML = `
-
-        <i class="bi bi-image fs-1"></i>
-
-        <div>
-            Image unavailable
+                <div class="modal-body" id="ordersModalBody">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-    `;
+    <!-- MODAL 2: WALLET & REWARDS HUB -->
+    <div class="modal fade" id="walletModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-wallet2 text-warning me-2"></i>Amazon Agentic Wallet</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded text-center mb-4 border">
+                        <div class="text-secondary small fw-bold">TOTAL WALLET BALANCE</div>
+                        <div class="display-6 fw-bold text-success mt-1" id="modalWalletBalance">₹5,000.00</div>
+                        <span class="badge bg-success mt-1">Ready for 1-Click Payments</span>
+                    </div>
 
-}
+                    <h6 class="fw-bold mb-2">Fast Top-Up:</h6>
+                    <div class="d-flex gap-2 mb-4">
+                        <button class="btn btn-outline-secondary flex-grow-1" onclick="topupWallet(500)">+₹500</button>
+                        <button class="btn btn-outline-secondary flex-grow-1" onclick="topupWallet(1000)">+₹1,000</button>
+                        <button class="btn btn-outline-secondary flex-grow-1" onclick="topupWallet(2000)">+₹2,000</button>
+                        <button class="btn btn-warning fw-bold flex-grow-1" onclick="topupWallet(5000)">+₹5,000</button>
+                    </div>
 
-function currencySymbol(
-    value
-) {
+                    <h6 class="fw-bold mb-2">Recent Wallet Activity:</h6>
+                    <div id="walletTransactionsList" style="max-height: 180px; overflow-y: auto;">
+                        <div class="text-muted small text-center py-2">No recent wallet transactions.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    const symbols = {
+    <!-- MODAL 3: DIAMONDS REWARDS HUB -->
+    <div class="modal fade" id="rewardsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-gem text-info me-2"></i>Amazon Diamonds Rewards Hub</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="p-4 rounded mb-3" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: white;">
+                        <i class="bi bi-gem display-4 text-info mb-2 d-inline-block"></i>
+                        <h3 class="fw-bold mb-0 text-info"><span id="modalDiamondsBalance">500</span> 💎</h3>
+                        <div class="badge bg-warning text-dark mt-2 fw-bold">Gold Tier Member</div>
+                    </div>
 
-        INR: "₹",
+                    <div class="card p-3 mb-3 border text-start">
+                        <h6 class="fw-bold mb-1">🎁 Daily Streak Check-in</h6>
+                        <p class="text-secondary small mb-2">Check in once every 24 hours to earn +50 free diamonds.</p>
+                        <button id="btnClaimDaily" class="btn btn-primary fw-bold" onclick="claimDailyStreak()">
+                            <i class="bi bi-calendar-check me-1"></i> Claim +50 Daily Diamonds
+                        </button>
+                    </div>
 
-        USD: "$",
+                    <div class="card p-3 border text-start">
+                        <h6 class="fw-bold mb-2">How Diamonds Work:</h6>
+                        <ul class="small text-secondary ps-3 mb-0">
+                            <li>Earn <strong>10% Diamonds back</strong> on every single purchase!</li>
+                            <li>100 Diamonds = <strong>₹100 instant discount</strong> at checkout.</li>
+                            <li>Unlock exclusive Prime member coupons & hardware early access.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        EUR: "€",
+    <!-- MODAL 4: LOGIN / SIGNUP -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-circle me-2 text-warning"></i>Amazon Customer Sign In</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-pills nav-fill mb-3" id="authTabs">
+                        <li class="nav-item">
+                            <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#tabSignIn">Sign In</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#tabSignUp">Create Account</button>
+                        </li>
+                    </ul>
 
-        GBP: "£",
+                    <div class="tab-content">
+                        <!-- SIGN IN -->
+                        <div class="tab-pane fade show active" id="tabSignIn">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Email or Username</label>
+                                <input type="text" id="loginEmail" class="form-control" value="alex@amazon.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Password</label>
+                                <input type="password" id="loginPassword" class="form-control" value="amazon123">
+                            </div>
+                            <button class="btn btn-warning w-100 fw-bold py-2 rounded-pill" onclick="submitLogin()">Sign In</button>
+                        </div>
 
-        JPY: "¥",
+                        <!-- SIGN UP -->
+                        <div class="tab-pane fade" id="tabSignUp">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold">Your Name</label>
+                                <input type="text" id="signupName" class="form-control" placeholder="First and last name">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold">Email</label>
+                                <input type="email" id="signupEmail" class="form-control" placeholder="name@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Password</label>
+                                <input type="password" id="signupPassword" class="form-control" placeholder="At least 6 characters">
+                            </div>
+                            <button class="btn btn-warning w-100 fw-bold py-2 rounded-pill" onclick="submitSignup()">Create your Amazon Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        CNY: "¥",
+    <!-- MODAL 5: PROFILE & ADDRESS -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2 text-warning"></i>Account Information & Person's Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- ACCOUNT INFO SUMMARY BAR -->
+                    <div class="card bg-light border-0 shadow-sm mb-4">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-6 d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0" id="modalAccountName">Alex Johnson</h6>
+                                        <small class="text-secondary" id="modalAccountEmail">alex@amazon.com</small>
+                                        <div><span class="badge bg-primary text-white rounded-pill" style="font-size: 10px;">Amazon Prime Member</span></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <div class="d-inline-flex gap-3">
+                                        <div class="bg-white p-2 px-3 rounded border text-center">
+                                            <small class="text-secondary d-block" style="font-size: 11px;">Amazon Wallet</small>
+                                            <span class="fw-bold text-success fs-6" id="modalAccountWallet">₹5,000.00</span>
+                                        </div>
+                                        <div class="bg-white p-2 px-3 rounded border text-center">
+                                            <small class="text-secondary d-block" style="font-size: 11px;">Diamond Rewards</small>
+                                            <span class="fw-bold text-info fs-6">💎 <span id="modalAccountDiamonds">500</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        CAD: "C$",
+                    <div class="row g-4">
+                        <!-- SECTION 1: PERSON'S INFORMATION WINDOW (/iam & /me) -->
+                        <div class="col-lg-6">
+                            <div class="border rounded p-3 h-100 bg-white shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-person-lines-fill me-1"></i>Person's Information Window
+                                    </h6>
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 10px;">Synced with /me & /iam</span>
+                                </div>
+                                <p class="small text-secondary mb-3">
+                                    This information is fetched when you ask <strong>"which laptop specs will be better for /me"</strong> or query with <strong>/me</strong> in the AI Copilot.
+                                </p>
 
-        AUD: "A$"
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-dark">Current Saved Persona:</label>
+                                    <div id="personaCurrentDisplay" class="p-3 bg-light rounded border text-muted small" style="min-height: 60px; font-style: italic;">
+                                        No personal information saved yet. Type below or use /iam in chat to store your details.
+                                    </div>
+                                </div>
 
-    };
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label small fw-bold mb-0">Update Details (100–200 characters):</label>
+                                        <small class="text-secondary" id="personaCharCount">0 / 200 chars</small>
+                                    </div>
+                                    <textarea id="personaInfoInput" class="form-control form-control-sm" rows="3" placeholder="e.g. I am person A and I am a college student from XYZ college studying computer science looking for a laptop under ₹60,000 for coding and assignments." oninput="updatePersonaCharCount()"></textarea>
+                                </div>
 
+                                <button class="btn btn-warning w-100 fw-bold py-2 rounded-pill shadow-sm" onclick="savePersonaFromModal()">
+                                    <i class="bi bi-check2-circle me-1"></i>Save Person Information
+                                </button>
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" style="font-size: 11px;">
+                                        💡 Next time you type <code>/iam &lt;text&gt;</code> in chat, it will automatically overwrite this.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
 
-    return (
-        symbols[
-            String(
-                value || ""
-            ).toUpperCase()
-        ]
-        ||
-        value
-        ||
-        ""
-    );
-}
+                        <!-- SECTION 2: SHIPPING / DELIVERY ADDRESS -->
+                        <div class="col-lg-6">
+                            <div class="border rounded p-3 h-100 bg-white shadow-sm">
+                                <h6 class="fw-bold text-dark mb-2">
+                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>Shipping & Delivery Address
+                                </h6>
+                                <p class="small text-secondary mb-3">Your default delivery address for 1-Click checkout.</p>
 
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Full Name</label>
+                                    <input type="text" id="addrFullName" class="form-control form-control-sm">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Street Address</label>
+                                    <input type="text" id="addrLine1" class="form-control form-control-sm">
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">City</label>
+                                        <input type="text" id="addrCity" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">State</label>
+                                        <input type="text" id="addrState" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">PIN Code</label>
+                                        <input type="text" id="addrPostalCode" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Phone Number</label>
+                                        <input type="text" id="addrPhone" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-dark w-100 fw-bold py-2 rounded-pill" onclick="saveAddress()">
+                                    <i class="bi bi-geo-alt me-1"></i>Save Delivery Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function formatMoney(
-    value,
-    currencyValue
-) {
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    const number =
-        Number(value);
+    <script>
+        // GLOBAL STATE
+        let currentUser = null;
+        let currentCart = { items: [], total_items: 0, subtotal_inr: 0, total_inr: 0 };
+        let currentWallet = { wallet_balance: 5000, diamonds_balance: 500 };
+        let activeOrders = [];
 
+        // ON LOAD
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadUserProfile();
+            await loadWalletInfo();
 
-    if (
-        !Number.isFinite(
-            number
-        )
-    ) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const asinParam = urlParams.get("asin");
 
-        return "--";
+            // If URL contains an ASIN, automatically add it or ensure it's in the cart
+            if (asinParam) {
+                const titleParam = urlParams.get("title") || "Selected Product";
+                const priceInrParam = parseFloat(urlParams.get("price_inr") || 0);
+                const priceParam = parseFloat(urlParams.get("price") || 0);
+                const imgParam = urlParams.get("image") || "";
 
-    }
-
-
-    return (
-
-        currencySymbol(
-            currencyValue
-        )
-
-        +
-
-        number.toLocaleString(
-            "en-IN",
-            {
-                maximumFractionDigits:
-                    2
+                await addSingleProductToCart(asinParam, titleParam, priceInrParam, priceParam, imgParam);
             }
-        )
 
-    );
-}
+            await loadCart();
+            await loadBuyAgain();
 
-
-if (priceINR) {
-
-    productPrice.textContent =
-        formatMoney(
-            priceINR,
-            "INR"
-        );
-
-
-    summaryPrice.textContent =
-        formatMoney(
-            priceINR,
-            "INR"
-        );
-
-
-    if (
-        originalPrice
-        &&
-        currency
-        &&
-        currency.toUpperCase()
-            !== "INR"
-    ) {
-
-        priceNote.textContent =
-            "Converted from "
-            +
-            formatMoney(
-                originalPrice,
-                currency
-            );
-
-    }
-
-} else if (originalPrice) {
-
-    productPrice.textContent =
-        formatMoney(
-            originalPrice,
-            currency
-        );
-
-
-    summaryPrice.textContent =
-        formatMoney(
-            originalPrice,
-            currency
-        );
-
-
-    priceNote.textContent =
-        "Original catalog price";
-
-}
-
-
-function showStatus(
-    message,
-    type
-) {
-
-    statusBox.className =
-        "status-box alert alert-" +
-        type;
-
-
-    statusBox.textContent =
-        message;
-
-
-    statusBox.style.display =
-        "block";
-
-}
-
-payButton.addEventListener(
-    "click",
-    async function() {
-
-        if (!asin) {
-
-            showStatus(
-                "Product information is missing.",
-                "danger"
-            );
-
-            return;
-
-        }
-
-
-        payButton.disabled =
-            true;
-
-
-        payButton.innerHTML = `
-
-            <span
-                class="spinner-border spinner-border-sm me-2"
-            ></span>
-
-            Opening secure checkout...
-
-        `;
-
-
-        try {
-
-            const orderResponse = await fetch(
-                "/api/checkout/create-order",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ asin: asin })
-                }
-            );
-
-            const orderData = await orderResponse.json();
-
-            if (!orderResponse.ok) {
-                throw new Error(
-                    orderData.detail || "Unable to create a Razorpay order"
-                );
-            }
-
-            checkoutOrder = orderData;
-
-            // Replace query-string display values with server-authoritative
-            // values before opening the payment modal.
-            if (checkoutOrder.title) {
-                productTitle.textContent = checkoutOrder.title;
-            }
-            if (checkoutOrder.amount_inr !== undefined) {
-                const confirmedPrice = formatMoney(
-                    checkoutOrder.amount_inr,
-                    "INR"
-                );
-                productPrice.textContent = confirmedPrice;
-                summaryPrice.textContent = confirmedPrice;
-                priceNote.textContent = "Amount confirmed by server";
-            }
-
-            const options = {
-                key: checkoutOrder.key_id,
-                amount: checkoutOrder.amount,
-                currency: checkoutOrder.currency,
-                name: "Agentic Commerce",
-                description: checkoutOrder.title || title,
-                order_id: checkoutOrder.order_id,
-
-                handler: async function(response) {
-                    showStatus(
-                        "Payment received. Verifying securely...",
-                        "info"
-                    );
-
-                    try {
-                        const verifyResponse = await fetch(
-                            "/api/checkout/verify-payment",
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_signature: response.razorpay_signature
-                                })
-                            }
-                        );
-
-                        const verification = await verifyResponse.json();
-
-                        if (!verifyResponse.ok) {
-                            throw new Error(
-                                verification.detail || "Payment verification failed"
-                            );
+            // Enter key trigger for Login modal
+            ["loginEmail", "loginPassword"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            submitLogin();
                         }
-
-                        showStatus(
-                            "Payment verified successfully. Your order is confirmed.",
-                            "success"
-                        );
-                        payButton.innerHTML = `
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            Payment verified
-                        `;
-                    } catch (error) {
-                        console.error("Verification error:", error);
-                        showStatus(
-                            "Payment received, but verification needs attention. Please save your payment ID: "
-                            + response.razorpay_payment_id,
-                            "warning"
-                        );
-                        payButton.disabled = false;
-                        payButton.innerHTML = `
-                            <i class="bi bi-arrow-repeat me-2"></i>
-                            Try verification again
-                        `;
-                    }
-                },
-
-                modal: {
-                    ondismiss: function() {
-                        payButton.disabled = false;
-                        payButton.innerHTML = `
-                            <i class="bi bi-credit-card me-2"></i>
-                            Pay with Razorpay
-                        `;
-                    }
+                    });
                 }
-            };
+            });
 
-            const razorpay =
-                new Razorpay(
-                    options
-                );
-
-
-            razorpay.on(
-                "payment.failed",
-                function(response) {
-
-                    console.error(
-                        "Payment failed:",
-                        response
-                    );
-
-
-                    showStatus(
-                        "Payment failed. Please try again.",
-                        "danger"
-                    );
-
-
-                    payButton.disabled =
-                        false;
-
-
-                    payButton.innerHTML = `
-
-                        <i
-                            class="bi bi-credit-card me-2"
-                        ></i>
-
-                        Pay with Razorpay
-
-                    `;
-
+            // Enter key trigger for Sign Up modal
+            ["signupName", "signupEmail", "signupPassword"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            submitSignup();
+                        }
+                    });
                 }
-            );
+            });
 
+            // Enter key trigger for Address modal
+            ["addrFullName", "addrLine1", "addrCity", "addrState", "addrPostalCode", "addrPhone"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            saveAddress();
+                        }
+                    });
+                }
+            });
+        });
 
-            razorpay.open();
-
-        } catch (error) {
-
-            console.error(
-                error
-            );
-
-
-            showStatus(error.message || "Unable to open Razorpay checkout.", "danger");
-
-
-            payButton.disabled =
-                false;
-
-
-            payButton.innerHTML = `
-
-                <i
-                    class="bi bi-credit-card me-2"
-                ></i>
-
-                Pay with Razorpay
-
-            `;
-
+        // ----------------------------------------------------
+        // USER AUTH & PROFILE
+        // ----------------------------------------------------
+        async function loadUserProfile() {
+            try {
+                const res = await fetch("/api/user/profile");
+                if (!res.ok) return;
+                currentUser = await res.json();
+                renderUserInfo();
+            } catch (err) {
+                console.error("Profile load error:", err);
+            }
         }
 
-    }
-);
+        function escapeHtml(str) {
+            return String(str || "").replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
 
-</script>
+        function updatePersonaCharCount() {
+            const inp = document.getElementById("personaInfoInput");
+            const countEl = document.getElementById("personaCharCount");
+            if (inp && countEl) {
+                countEl.textContent = `${inp.value.length} / 200 chars`;
+            }
+        }
 
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
+        async function savePersonaFromModal() {
+            const text = (document.getElementById("personaInfoInput")?.value || "").trim();
+            try {
+                const res = await fetch("/api/user/persona", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ persona_info: text })
+                });
+                const data = await res.json();
+                if (currentUser) {
+                    currentUser.persona_info = data.persona_info;
+                }
+                renderUserInfo();
+                alert("✅ Person's information successfully saved to your account!");
+            } catch (err) {
+                alert("Failed to save person's information.");
+            }
+        }
 
+        function renderUserInfo() {
+            if (!currentUser) return;
+            const firstName = (currentUser.full_name || "Customer").split(" ")[0];
+            const headerUser = document.getElementById("headerUserName");
+            if (headerUser) headerUser.textContent = firstName;
+            const menuEmail = document.getElementById("menuUserEmail");
+            if (menuEmail) menuEmail.textContent = currentUser.email || "";
+            const delivName = document.getElementById("deliveryName");
+            if (delivName) delivName.textContent = currentUser.full_name || "Alex Johnson";
+            const delivAddr = document.getElementById("deliveryAddress");
+            if (delivAddr) delivAddr.textContent = `${currentUser.address_line1 || '221B Baker Street'}, ${currentUser.city || 'Bengaluru'} ${currentUser.postal_code || '560001'}`;
 
+            // Populate account summary banner
+            const modalName = document.getElementById("modalAccountName");
+            if (modalName) modalName.textContent = currentUser.full_name || "Customer";
+            const modalEmail = document.getElementById("modalAccountEmail");
+            if (modalEmail) modalEmail.textContent = currentUser.email || "";
+            const modalWallet = document.getElementById("modalAccountWallet");
+            if (modalWallet) modalWallet.textContent = `₹${Number(currentUser.wallet_balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            const modalDia = document.getElementById("modalAccountDiamonds");
+            if (modalDia) modalDia.textContent = currentUser.diamonds_balance || 0;
+
+            // Populate Person's Information Window (/iam & /me)
+            const curDisplay = document.getElementById("personaCurrentDisplay");
+            if (curDisplay) {
+                if (currentUser.persona_info) {
+                    curDisplay.innerHTML = `&ldquo;${escapeHtml(currentUser.persona_info)}&rdquo;`;
+                    curDisplay.classList.remove("text-muted");
+                    curDisplay.classList.add("text-dark", "fw-semibold");
+                } else {
+                    curDisplay.innerHTML = `<em>No personal information saved yet. Type below or use /iam in chat to store your details.</em>`;
+                    curDisplay.classList.add("text-muted");
+                    curDisplay.classList.remove("text-dark", "fw-semibold");
+                }
+            }
+            const personaInp = document.getElementById("personaInfoInput");
+            if (personaInp) {
+                personaInp.value = currentUser.persona_info || "";
+                updatePersonaCharCount();
+            }
+
+            // Populate profile modal address fields
+            const nameInp = document.getElementById("addrFullName");
+            if (nameInp) nameInp.value = currentUser.full_name || "";
+            const addrInp = document.getElementById("addrLine1");
+            if (addrInp) addrInp.value = currentUser.address_line1 || "";
+            const cityInp = document.getElementById("addrCity");
+            if (cityInp) cityInp.value = currentUser.city || "";
+            const stateInp = document.getElementById("addrState");
+            if (stateInp) stateInp.value = currentUser.state || "";
+            const pinInp = document.getElementById("addrPostalCode");
+            if (pinInp) pinInp.value = currentUser.postal_code || "";
+            const phoneInp = document.getElementById("addrPhone");
+            if (phoneInp) phoneInp.value = currentUser.phone || "";
+        }
+
+        async function submitLogin() {
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            if (!email || !password) return alert("Please fill in email and password.");
+
+            try {
+                const res = await fetch("/api/user/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Login failed");
+                currentUser = data;
+                bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
+                renderUserInfo();
+                await loadWalletInfo();
+                await loadCart();
+                alert(`Welcome back, ${currentUser.full_name}!`);
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function submitSignup() {
+            const name = document.getElementById("signupName").value.trim();
+            const email = document.getElementById("signupEmail").value.trim();
+            const password = document.getElementById("signupPassword").value;
+            if (!email || !password) return alert("Email and password are required.");
+
+            try {
+                const res = await fetch("/api/user/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ full_name: name, email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Signup failed");
+                currentUser = data;
+                bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
+                renderUserInfo();
+                await loadWalletInfo();
+                await loadCart();
+                alert(`🎉 Account created! You received ₹2,500 Wallet Credit & 250 Diamonds bonus!`);
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function saveAddress() {
+            const payload = {
+                full_name: document.getElementById("addrFullName").value.trim(),
+                address_line1: document.getElementById("addrLine1").value.trim(),
+                city: document.getElementById("addrCity").value.trim(),
+                state: document.getElementById("addrState").value.trim(),
+                postal_code: document.getElementById("addrPostalCode").value.trim(),
+                phone: document.getElementById("addrPhone").value.trim(),
+            };
+            try {
+                const res = await fetch("/api/user/update-profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                currentUser = await res.json();
+                renderUserInfo();
+                bootstrap.Modal.getInstance(document.getElementById("profileModal")).hide();
+            } catch (err) {
+                alert("Failed to save address.");
+            }
+        }
+
+        // ----------------------------------------------------
+        // CART CRUD OPERATIONS (Window for Quantity, Add, Update, Remove)
+        // ----------------------------------------------------
+        async function loadCart() {
+            try {
+                const res = await fetch("/api/cart");
+                currentCart = await res.json();
+                renderCartUI();
+            } catch (err) {
+                console.error("Cart fetch error:", err);
+            }
+        }
+
+        async function addSingleProductToCart(asin, title, priceInr, priceUsd, image) {
+            // Check if product already exists in database or fetch details
+            if (!priceInr || priceInr <= 0) {
+                try {
+                    const prodRes = await fetch(`/api/products/${encodeURIComponent(asin)}`);
+                    if (prodRes.ok) {
+                        const pData = await prodRes.json();
+                        const p = pData.product || {};
+                        title = p.title || title;
+                        priceInr = p.price ? Number(p.price) * 96.3 : priceInr;
+                        if (!image && pData.images && pData.images.length > 0) {
+                            image = pData.images[0].url;
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            try {
+                const res = await fetch("/api/cart/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        asin,
+                        title,
+                        price_inr: priceInr,
+                        price: priceUsd,
+                        image_url: image,
+                        quantity: 1
+                    })
+                });
+                currentCart = await res.json();
+            } catch (err) {
+                console.error("Error adding to cart:", err);
+            }
+        }
+
+        function renderCartUI() {
+            const listContainer = document.getElementById("checkoutItemsList");
+            const items = currentCart.items || [];
+            document.getElementById("cartItemsCount").textContent = currentCart.total_items || items.length;
+            document.getElementById("footerCount").textContent = currentCart.total_items || items.length;
+
+            if (items.length === 0) {
+                document.getElementById("listSubtotalRow").style.display = "none";
+                listContainer.innerHTML = `
+                    <div class="empty-cart-wrap">
+                        <i class="bi bi-cart-x fs-1 text-secondary"></i>
+                        <h5 class="fw-bold mt-3">Your Amazon Agentic Cart is empty</h5>
+                        <p class="text-secondary small">Your shopping cart has no items. Explore verified laptops & computers from our catalog.</p>
+                        <a href="/store" class="btn btn-warning fw-bold px-4 rounded-pill mt-2">
+                            <i class="bi bi-bag-plus me-1"></i> Continue Shopping Today's Deals
+                        </a>
+                    </div>
+                `;
+                recalculateSummary();
+                return;
+            }
+
+            document.getElementById("listSubtotalRow").style.display = "block";
+            document.getElementById("footerSubtotal").textContent = `₹${Number(currentCart.subtotal_inr).toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+
+            listContainer.innerHTML = items.map(item => {
+                const proxyImg = item.image_url ? `/api/image-proxy?url=${encodeURIComponent(item.image_url)}` : 'https://placehold.co/120x120?text=PC';
+                const formattedPrice = `₹${Number(item.price_inr).toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+                const formattedLineTotal = `₹${Number(item.line_total_inr).toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+
+                return `
+                    <div class="cart-item-row" id="cart-row-${item.asin}">
+                        <img src="${proxyImg}" class="cart-item-img" alt="${item.title}" onerror="this.src='https://placehold.co/120x120?text=PC'">
+                        <div class="flex-grow-1">
+                            <a href="/store" class="cart-item-title">${item.title}</a>
+                            <div class="text-success small fw-semibold mb-2"><i class="bi bi-check2-circle me-1"></i>In Stock · Eligible for FREE Delivery</div>
+                            
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <!-- QUANTITY CONTROLLER WINDOW -->
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quantity-window">
+                                        <button class="qty-btn" onclick="changeItemQuantity('${item.asin}', -1)" title="Decrease Quantity">−</button>
+                                        <input type="number" class="qty-input" value="${item.quantity}" min="1" max="99" onchange="setItemQuantity('${item.asin}', this.value)">
+                                        <button class="qty-btn" onclick="changeItemQuantity('${item.asin}', 1)" title="Increase Quantity">+</button>
+                                    </div>
+                                    <button class="btn btn-link text-danger btn-sm p-0 text-decoration-none" onclick="removeCartItem('${item.asin}')">
+                                        <i class="bi bi-trash3 me-1"></i>Delete
+                                    </button>
+                                    <span class="text-secondary small">|</span>
+                                    <button class="btn btn-link text-secondary btn-sm p-0 text-decoration-none" onclick="alert('Saved for later!')">Save for later</button>
+                                </div>
+
+                                <div class="text-end">
+                                    <span class="small text-secondary">Subtotal: </span>
+                                    <span class="cart-item-price">${formattedLineTotal}</span>
+                                    <div class="small text-secondary" style="font-size: 11px;">(${formattedPrice} each)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            recalculateSummary();
+        }
+
+        async function changeItemQuantity(asin, delta) {
+            const item = currentCart.items.find(i => i.asin === asin);
+            if (!item) return;
+            const newQty = item.quantity + delta;
+            await setItemQuantity(asin, newQty);
+        }
+
+        async function setItemQuantity(asin, qty) {
+            const quantity = parseInt(qty);
+            try {
+                const res = await fetch("/api/cart/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ asin, quantity })
+                });
+                currentCart = await res.json();
+                renderCartUI();
+            } catch (err) {
+                console.error("Update quantity error:", err);
+            }
+        }
+
+        async function removeCartItem(asin) {
+            try {
+                const res = await fetch("/api/cart/remove", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ asin })
+                });
+                currentCart = await res.json();
+                renderCartUI();
+            } catch (err) {
+                console.error("Remove item error:", err);
+            }
+        }
+
+        // ----------------------------------------------------
+        // SUMMARY & REWARDS RECALCULATION
+        // ----------------------------------------------------
+        function recalculateSummary() {
+            const subtotal = currentCart.subtotal_inr || 0;
+            document.getElementById("breakdownSubtotal").textContent = `₹${Number(subtotal).toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+
+            const useDiamonds = document.getElementById("checkUseDiamonds").checked;
+            const useWallet = document.getElementById("checkUseWallet").checked;
+
+            let diamondDiscount = 0;
+            if (useDiamonds && currentWallet.diamonds_balance >= 100 && subtotal > 100) {
+                diamondDiscount = 100;
+                document.getElementById("diamondDiscountRow").style.display = "flex";
+                document.getElementById("breakdownDiamondDiscount").textContent = `-₹100.00`;
+            } else {
+                document.getElementById("diamondDiscountRow").style.display = "none";
+            }
+
+            let afterDiscount = Math.max(0, subtotal - diamondDiscount);
+            let walletDeduction = 0;
+            const walletBalance = currentWallet.wallet_balance || 0;
+
+            const btnWallet = document.getElementById("btnPayWallet");
+            const btnRazorpay = document.getElementById("payButton");
+
+            if (useWallet && walletBalance > 0 && afterDiscount > 0) {
+                walletDeduction = Math.min(walletBalance, afterDiscount);
+                document.getElementById("walletDeductionRow").style.display = "flex";
+                document.getElementById("breakdownWalletDeduction").textContent = `-₹${walletDeduction.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+            } else {
+                document.getElementById("walletDeductionRow").style.display = "none";
+            }
+
+            const finalPayable = Math.max(0, afterDiscount - walletDeduction);
+            document.getElementById("breakdownFinalTotal").textContent = `₹${finalPayable.toLocaleString('en-IN', {maximumFractionDigits: 2})}`;
+
+            // Button visibility based on payment mode
+            if (useWallet && finalPayable === 0 && subtotal > 0) {
+                btnWallet.style.display = "block";
+                btnRazorpay.style.display = "none";
+            } else {
+                btnWallet.style.display = "none";
+                btnRazorpay.style.display = "block";
+                btnRazorpay.innerHTML = `<i class="bi bi-credit-card me-2"></i>Pay ₹${finalPayable.toLocaleString('en-IN', {maximumFractionDigits: 2})} with Razorpay`;
+            }
+
+            // Diamonds to earn: 10%
+            const diamondsEarned = Math.floor(finalPayable * 0.1);
+            document.getElementById("earnDiamondsCount").textContent = `+${diamondsEarned.toLocaleString()}`;
+        }
+
+        // ----------------------------------------------------
+        // WALLET & DIAMONDS OPERATIONS
+        // ----------------------------------------------------
+        async function loadWalletInfo() {
+            try {
+                const res = await fetch("/api/wallet");
+                currentWallet = await res.json();
+
+                const formattedBal = Number(currentWallet.wallet_balance).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById("headerWallet").textContent = formattedBal;
+                document.getElementById("headerDiamonds").textContent = currentWallet.diamonds_balance || 0;
+                document.getElementById("summaryWalletBadge").textContent = `₹${formattedBal}`;
+                document.getElementById("summaryDiamondsBadge").textContent = `${currentWallet.diamonds_balance || 0} 💎`;
+                document.getElementById("modalWalletBalance").textContent = `₹${formattedBal}`;
+                document.getElementById("modalDiamondsBalance").textContent = currentWallet.diamonds_balance || 0;
+
+                // Render wallet transactions
+                const txList = document.getElementById("walletTransactionsList");
+                if (currentWallet.transactions && currentWallet.transactions.length > 0) {
+                    txList.innerHTML = currentWallet.transactions.map(t => `
+                        <div class="d-flex justify-content-between align-items-center p-2 mb-1 bg-light rounded small border">
+                            <div>
+                                <div class="fw-bold">${t.description}</div>
+                                <div class="text-secondary" style="font-size: 11px;">${t.created_at}</div>
+                            </div>
+                            <span class="fw-bold ${t.type === 'credit' ? 'text-success' : 'text-danger'}">
+                                ${t.type === 'credit' ? '+' : '-'}₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Wallet error:", err);
+            }
+        }
+
+        async function topupWallet(amount) {
+            try {
+                const res = await fetch("/api/wallet/topup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount })
+                });
+                const data = await res.json();
+                currentWallet = data;
+                await loadWalletInfo();
+                recalculateSummary();
+                alert(`₹${amount} added successfully to your Amazon Wallet!`);
+            } catch (err) {
+                alert("Top-up failed.");
+            }
+        }
+
+        async function claimDailyStreak() {
+            try {
+                const res = await fetch("/api/rewards/claim-daily", { method: "POST" });
+                const data = await res.json();
+                alert(data.message || "Claimed!");
+                await loadWalletInfo();
+            } catch (err) {
+                alert("Could not claim streak bonus.");
+            }
+        }
+
+        // ----------------------------------------------------
+        // ORDER PLACEMENT (Wallet & Razorpay)
+        // ----------------------------------------------------
+        async function placeOrderWithWallet() {
+            if (!currentCart.items || currentCart.items.length === 0) return alert("Cart is empty.");
+            const useDiamonds = document.getElementById("checkUseDiamonds").checked;
+
+            const btn = document.getElementById("btnPayWallet");
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Processing Wallet Payment...`;
+
+            try {
+                const res = await fetch("/api/orders/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        payment_method: "wallet",
+                        diamonds_to_use: useDiamonds ? 100 : 0,
+                    })
+                });
+                const order = await res.json();
+                if (!res.ok) throw new Error(order.detail || "Order failed");
+
+                await loadCart();
+                await loadWalletInfo();
+                openOrdersModal();
+                alert(`🎉 Order #${order.order_number} confirmed with Wallet Pay!`);
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="bi bi-wallet2 me-2"></i>Pay with Wallet Balance`;
+            }
+        }
+
+        async function placeOrderWithRazorpay() {
+            if (!currentCart.items || currentCart.items.length === 0) return alert("Cart is empty.");
+            const btn = document.getElementById("payButton");
+            const firstAsin = currentCart.items[0].asin;
+            const useDiamonds = document.getElementById("checkUseDiamonds").checked;
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Connecting to Razorpay...`;
+
+            try {
+                // 1. Create order on backend with Razorpay
+                const orderRes = await fetch("/api/checkout/create-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ asin: firstAsin })
+                });
+                const rzpOrder = await orderRes.json();
+                if (!orderRes.ok) throw new Error(rzpOrder.detail || "Unable to initiate Razorpay order");
+
+                // 2. Open Razorpay Checkout modal
+                const options = {
+                    key: rzpOrder.key_id,
+                    amount: rzpOrder.amount,
+                    currency: rzpOrder.currency || "INR",
+                    name: "Amazon Agentic Store",
+                    description: `Order for ${currentCart.total_items} items`,
+                    order_id: rzpOrder.order_id,
+                    prefill: {
+                        name: currentUser ? currentUser.full_name : "Customer",
+                        email: currentUser ? currentUser.email : "customer@example.com",
+                        contact: currentUser ? (currentUser.phone || "9999999999") : "9999999999"
+                    },
+                    theme: { color: "#131921" },
+                    handler: async function(resp) {
+                        showStatus("Payment authorized! Finalizing your order...", "info");
+                        try {
+                            // Verify payment
+                            const verifyRes = await fetch("/api/checkout/verify-payment", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: resp.razorpay_payment_id,
+                                    razorpay_order_id: resp.razorpay_order_id,
+                                    razorpay_signature: resp.razorpay_signature
+                                })
+                            });
+
+                            // Create confirmed order in our orders database
+                            await fetch("/api/orders/create", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    payment_method: "razorpay",
+                                    razorpay_order_id: resp.razorpay_order_id,
+                                    razorpay_payment_id: resp.razorpay_payment_id,
+                                    diamonds_to_use: useDiamonds ? 100 : 0,
+                                })
+                            });
+
+                            await loadCart();
+                            await loadWalletInfo();
+                            openOrdersModal();
+                            alert("🎉 Payment verified! Your order has been placed successfully.");
+                        } catch (err) {
+                            showStatus("Order recorded. Please check Returns & Orders.", "warning");
+                        }
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            btn.disabled = false;
+                            recalculateSummary();
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (err) {
+                showStatus(err.message || "Payment initiation failed.", "danger");
+                btn.disabled = false;
+                recalculateSummary();
+            }
+        }
+
+        // ----------------------------------------------------
+        // ORDERS & TRACKING LOGS (Amazon-style)
+        // ----------------------------------------------------
+        async function openOrdersModal() {
+            const modal = new bootstrap.Modal(document.getElementById("ordersModal"));
+            modal.show();
+            const body = document.getElementById("ordersModalBody");
+            body.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>`;
+
+            try {
+                const res = await fetch("/api/orders");
+                const data = await res.json();
+                activeOrders = data.orders || [];
+
+                if (activeOrders.length === 0) {
+                    body.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-secondary"></i>
+                            <h6 class="fw-bold mt-2">No past orders yet.</h6>
+                            <p class="text-muted small">Once you complete a purchase, your orders and live tracking logs will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                body.innerHTML = activeOrders.map(order => {
+                    const statusClass = order.status === 'cancelled' ? 'bg-danger' : 'bg-success';
+                    const isCancelled = order.status === 'cancelled';
+
+                    // Stepper active states
+                    const step1 = true;
+                    const step2 = ['processing', 'shipped', 'out_for_delivery', 'delivered'].includes(order.status);
+                    const step3 = ['shipped', 'out_for_delivery', 'delivered'].includes(order.status);
+                    const step4 = ['delivered'].includes(order.status);
+
+                    let itemsHtml = (order.items || []).map(item => `
+                        <div class="d-flex align-items-center gap-3 p-2 mb-2 bg-light rounded border">
+                            <img src="${item.image_url ? `/api/image-proxy?url=${encodeURIComponent(item.image_url)}` : 'https://placehold.co/60x60'}" style="width: 50px; height: 50px; object-fit: contain;">
+                            <div class="flex-grow-1 small">
+                                <div class="fw-bold text-truncate" style="max-width: 380px;">${item.title}</div>
+                                <div class="text-muted">Qty: ${item.quantity} · Price: ₹${Number(item.price_inr).toLocaleString('en-IN')}</div>
+                            </div>
+                            <button class="btn btn-sm btn-warning fw-bold text-nowrap" onclick="buyAgainDirect('${item.asin}', '${item.title.replace(/'/g, "\\'")}', ${item.price_inr}, '${item.image_url || ''}')">
+                                <i class="bi bi-arrow-repeat me-1"></i>Buy Again
+                            </button>
+                        </div>
+                    `).join('');
+
+                    let logsHtml = (order.tracking_logs || []).map(l => `
+                        <div class="audit-log-item">
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span><i class="bi bi-geo-alt me-1 text-primary"></i>${l.location}</span>
+                                <span class="text-muted">${l.time}</span>
+                            </div>
+                            <div class="text-dark">${l.description}</div>
+                        </div>
+                    `).join('');
+
+                    return `
+                        <div class="card p-3 mb-3 border shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pb-2 border-bottom">
+                                <div>
+                                    <span class="badge ${statusClass} text-uppercase me-2">${order.status}</span>
+                                    <strong class="fs-6">${order.order_number}</strong>
+                                    <div class="text-muted small">Placed on ${order.created_at_fmt} · Paid via ${order.payment_method.toUpperCase()}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-danger fs-5">₹${order.total_inr.toLocaleString('en-IN')}</div>
+                                    <div class="text-primary small">💎 Earned ${order.diamonds_earned} Diamonds</div>
+                                </div>
+                            </div>
+
+                            <!-- STEP TRACKER -->
+                            ${!isCancelled ? `
+                                <div class="tracking-timeline">
+                                    <div class="timeline-step ${step1 ? 'active' : ''}">
+                                        <div class="step-circle"><i class="bi bi-receipt"></i></div>
+                                        <div class="step-label">Ordered</div>
+                                    </div>
+                                    <div class="timeline-step ${step2 ? 'active' : ''}">
+                                        <div class="step-circle"><i class="bi bi-box-seam"></i></div>
+                                        <div class="step-label">Packed</div>
+                                    </div>
+                                    <div class="timeline-step ${step3 ? 'active' : ''}">
+                                        <div class="step-circle"><i class="bi bi-truck"></i></div>
+                                        <div class="step-label">Shipped</div>
+                                    </div>
+                                    <div class="timeline-step ${step4 ? 'active' : ''}">
+                                        <div class="step-circle"><i class="bi bi-house-check"></i></div>
+                                        <div class="step-label">Delivered</div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="alert alert-danger py-2 my-2 small">
+                                    <i class="bi bi-x-circle me-1"></i>This order has been cancelled and refunded to your Amazon Wallet.
+                                </div>
+                            `}
+
+                            <!-- ITEMS -->
+                            <div class="mt-2">${itemsHtml}</div>
+
+                            <!-- LIVE TRACKING LOGS ACCORDION -->
+                            <details class="mt-2 small">
+                                <summary class="text-primary fw-semibold cursor-pointer">
+                                    <i class="bi bi-clock-history me-1"></i>View Live Tracking Logs & Audit Trail (${order.tracking_logs.length} updates)
+                                </summary>
+                                <div class="mt-2">${logsHtml}</div>
+                            </details>
+
+                            <!-- CANCEL BUTTON -->
+                            ${!isCancelled ? `
+                                <div class="text-end mt-2 pt-2 border-top">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('${order.order_number}')">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel Order (Instant Wallet Refund)
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                body.innerHTML = `<div class="alert alert-danger">Unable to load orders.</div>`;
+            }
+        }
+
+        async function cancelOrder(orderNumber) {
+            if (!confirm(`Are you sure you want to cancel Order #${orderNumber}? The amount will be instantly refunded to your Amazon Wallet.`)) return;
+            try {
+                const res = await fetch(`/api/orders/${orderNumber}/cancel`, { method: "POST" });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Cancel failed");
+                alert(`Order #${orderNumber} cancelled. Refund credited to your Amazon Wallet!`);
+                await openOrdersModal();
+                await loadWalletInfo();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ----------------------------------------------------
+        // BUY AGAIN
+        // ----------------------------------------------------
+        async function loadBuyAgain() {
+            try {
+                const res = await fetch("/api/buy-again");
+                const data = await res.json();
+                const products = data.products || [];
+                const box = document.getElementById("checkoutBuyAgainBox");
+                const grid = document.getElementById("checkoutBuyAgainGrid");
+
+                if (products.length > 0) {
+                    box.style.display = "block";
+                    grid.innerHTML = products.slice(0, 4).map(p => `
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2 p-2 bg-light rounded border">
+                                <img src="${p.image_url ? `/api/image-proxy?url=${encodeURIComponent(p.image_url)}` : 'https://placehold.co/40x40'}" style="width: 40px; height: 40px; object-fit: contain;">
+                                <div class="flex-grow-1 small text-truncate">
+                                    <div class="fw-bold text-truncate">${p.title}</div>
+                                    <div class="text-danger fw-bold">₹${Number(p.price_inr).toLocaleString('en-IN')}</div>
+                                </div>
+                                <button class="btn btn-sm btn-warning fw-bold text-nowrap" onclick="buyAgainDirect('${p.asin}', '${p.title.replace(/'/g, "\\'")}', ${p.price_inr}, '${p.image_url || ''}')">
+                                    Buy Again
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {}
+        }
+
+        async function buyAgainDirect(asin, title, priceInr, img) {
+            await addSingleProductToCart(asin, title, priceInr, null, img);
+            await loadCart();
+            alert(`Added "${title.slice(0, 30)}..." to your checkout list!`);
+            // Close any open modals
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(m => bootstrap.Modal.getInstance(m)?.hide());
+        }
+
+        // MODAL HELPERS
+        function openWalletModal() { new bootstrap.Modal(document.getElementById("walletModal")).show(); }
+        function openRewardsModal() { new bootstrap.Modal(document.getElementById("rewardsModal")).show(); }
+        function openLoginModal() { new bootstrap.Modal(document.getElementById("loginModal")).show(); }
+        function openProfileModal() { new bootstrap.Modal(document.getElementById("profileModal")).show(); }
+
+        function showStatus(msg, type) {
+            const b = document.getElementById("statusBox");
+            b.className = `alert alert-${type} py-2 small mb-3`;
+            b.textContent = msg;
+            b.style.display = "block";
+        }
+    </script>
 </body>
-
 </html>

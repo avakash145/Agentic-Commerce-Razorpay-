@@ -27,11 +27,38 @@ SECRET_KEY = os.getenv(
 DEBUG = os.getenv("DEBUG", "false").lower() in {"1", "true", "yes"}
 
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "0.0.0.0",
-]
+allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(",") if h.strip()]
+else:
+    ALLOWED_HOSTS = [
+        "127.0.0.1",
+        "localhost",
+        "0.0.0.0",
+        "testserver",
+        "*",
+    ]
+
+
+# ============================================================
+# CROSS-ORIGIN & SECURITY HEADERS
+# ============================================================
+# Allow Razorpay checkout modal / payment authorization popups to communicate
+# without being blocked as 'about:blank' by modern browser COOP policies.
+SECURE_CROSS_ORIGIN_OPENER_POLICY = os.getenv(
+    "SECURE_CROSS_ORIGIN_OPENER_POLICY",
+    "same-origin-allow-popups",
+)
+
+SECURE_REFERRER_POLICY = os.getenv(
+    "SECURE_REFERRER_POLICY",
+    "strict-origin-when-cross-origin",
+)
+
+X_FRAME_OPTIONS = os.getenv(
+    "X_FRAME_OPTIONS",
+    "SAMEORIGIN",
+)
 
 
 # ============================================================

@@ -29,13 +29,13 @@ class RazorpayAdapter:
 
     def __init__(self):
 
-        key_id = os.getenv(
+        key_id = (os.getenv(
             "RAZORPAY_KEY_ID"
-        )
+        ) or "").strip()
 
-        key_secret = os.getenv(
+        key_secret = (os.getenv(
             "RAZORPAY_KEY_SECRET"
-        )
+        ) or "").strip()
 
         if not key_id:
 

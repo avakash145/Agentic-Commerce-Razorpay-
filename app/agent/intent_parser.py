@@ -10,31 +10,27 @@ load_dotenv()
 class IntentParser:
 
     def __init__(self):
-
         api_key = os.getenv("OLLAMA_API_KEY")
-
-        # The hosted model is an enhancement, not a reason for the
-        # shopping experience to be unavailable.  A conservative local
-        # parser below keeps demos and health checks usable without it.
         self.structured_llm = None
-
         if not api_key:
             return
 
-        model = os.getenv(
-            "OLLAMA_MODEL",
-            "nemotron-3-ultra"
-        )
+        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+        model = os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b")
 
-        self.llm = ChatOpenAI(
-            model=model,
-            temperature=0,
-            timeout=float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "15")),
-            max_retries=1,
-            api_key=api_key,
-            base_url=("https://ollama.com/v1"))
-
-        self.structured_llm = (self.llm.with_structured_output(CommerceIntent))
+        try:
+            self.llm = ChatOpenAI(
+                model=model,
+                temperature=0,
+                timeout=float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "15")),
+                max_retries=1,
+                api_key=api_key,
+                base_url=base_url,
+            )
+            self.structured_llm = self.llm.with_structured_output(CommerceIntent)
+        except Exception as exc:
+            print(f"[INTENT PARSER INIT WARNING] {exc}")
+            self.structured_llm = None
 
     @staticmethod
     def _amount(match: re.Match) -> float:

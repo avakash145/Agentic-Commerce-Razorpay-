@@ -33,7 +33,7 @@ Agentic Commerce is a shopping agent that turns a natural-language request into 
 5. Start the app:
 
    ```bash
-   uvicorn main_api:app --reload
+   python manage.py runserver 8000
    ```
 
    Open <http://localhost:8000>.
@@ -93,11 +93,11 @@ The checkout never accepts an amount from the browser. It sends only the selecte
 
 ```bash
 python -m pytest tests -q
-python -m compileall -q app web config main.py main_api.py
-DJANGO_SETTINGS_MODULE=config.settings python -m django check
+python -m compileall -q app web config main.py
+python manage.py check
 ```
 
-`main_api.py` is the canonical server entrypoint for the complete demo. The older Django files remain for the existing project structure, but the FastAPI entrypoint is the one that includes checkout and webhook routes.
+Django (`manage.py runserver`) is the backend server entrypoint for the application, hosting all chat, catalog discovery, product detail, Razorpay checkout, and webhook verification endpoints.
 
 ## Security notes for submission
 
