@@ -642,11 +642,14 @@
             background: #fafafa;
         }
         .msg-bubble {
-            max-width: 88%;
+            max-width: 92%;
             padding: 12px 16px;
             border-radius: 14px;
             font-size: 14px;
             line-height: 1.45;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            box-sizing: border-box;
         }
         .msg-user {
             background: #2563eb;
@@ -661,19 +664,36 @@
             border-bottom-left-radius: 4px;
             border: 1px solid #e2e8f0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            max-width: 94%;
         }
-        .msg-bot table {
-            width: 100%;
-            margin: 10px 0;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .msg-bot th, .msg-bot td {
+        .msg-bot .table-responsive,
+        .compare-followup-bubble .table-responsive {
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            margin: 8px 0;
             border: 1px solid #e2e8f0;
-            padding: 6px 8px;
+            background: #fff;
+            display: block;
         }
-        .msg-bot th {
+        .msg-bot table,
+        .compare-followup-bubble table {
+            min-width: 420px;
+            font-size: 12px !important;
+            margin-bottom: 0 !important;
+            width: 100%;
+        }
+        .msg-bot th, .msg-bot td,
+        .compare-followup-bubble th, .compare-followup-bubble td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            vertical-align: middle;
+        }
+        .msg-bot th,
+        .compare-followup-bubble th {
             background: #f1f5f9;
+            font-weight: 600;
         }
 
         /* CHAT INPUT AREA */
@@ -982,7 +1002,11 @@
                         <li><a class="dropdown-item" href="javascript:void(0)" onclick="openWalletModal()"><i class="bi bi-wallet2 me-2 text-success"></i>Amazon Wallet</a></li>
                         <li><a class="dropdown-item" href="javascript:void(0)" onclick="openRewardsModal()"><i class="bi bi-gem me-2 text-info"></i>Diamond Rewards 💎</a></li>
                         <li><a class="dropdown-item" href="javascript:void(0)" onclick="openBuyAgainModal()"><i class="bi bi-arrow-repeat me-2 text-primary"></i>Buy Again</a></li>
-                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openProfileModal()"><i class="bi bi-geo-alt me-2"></i>Delivery Address</a></li>
+                        <li><a class="dropdown-item text-primary fw-bold" href="/seller"><i class="bi bi-building-check me-2"></i>Seller Central (Business Hub)</a></li>
+                        <li><a class="dropdown-item text-success fw-bold" href="/admin-seller"><i class="bi bi-shield-check me-2"></i>Admin Quality Verification</a></li>
+                        <li><a class="dropdown-item text-warning fw-bold" href="/delivery" target="_blank"><i class="bi bi-truck me-2"></i>Delivery Partner (Doorstep Returns)</a></li>
+                        <li><a class="dropdown-item text-info fw-bold" href="javascript:void(0)" onclick="openHelplineModal()"><i class="bi bi-headset me-2"></i>24x7 Helpline (9909665466)</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openFaqModal()"><i class="bi bi-question-circle me-2"></i>Customer FAQ & Return Policies</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="openLoginModal()"><i class="bi bi-box-arrow-right me-2"></i>Sign In / Switch Account</a></li>
                     </ul>
@@ -1010,13 +1034,18 @@
     <!-- SUBNAV -->
     <nav class="amz-subnav">
         <a href="javascript:void(0)" class="active" onclick="filterCategory('all', this)"><i class="bi bi-list me-1"></i>All Products</a>
+        <a href="javascript:void(0)" id="subnavDealsBtn" class="text-danger fw-bold" onclick="filterDealsOnly(this)"><i class="bi bi-fire me-1"></i>Limited Time Deals ⚡</a>
         <a href="javascript:void(0)" onclick="filterCategory('laptop', this)"><i class="bi bi-laptop me-1"></i>Laptops</a>
         <a href="javascript:void(0)" onclick="filterSearch('RTX gaming', this)"><i class="bi bi-controller me-1"></i>Gaming Laptops</a>
         <a href="javascript:void(0)" onclick="filterCategory('desktop', this)"><i class="bi bi-display me-1"></i>Desktops</a>
-        <a href="javascript:void(0)" onclick="openOrdersModal()"><i class="bi bi-box-seam me-1 text-warning"></i>Your Orders & Tracking</a>
-        <a href="javascript:void(0)" onclick="openWalletModal()"><i class="bi bi-wallet2 me-1 text-success"></i>Amazon Wallet (₹<span id="subnavWallet">5,000</span>)</a>
-        <a href="javascript:void(0)" onclick="openRewardsModal()"><i class="bi bi-gem me-1 text-info"></i>Diamond Rewards 💎</a>
-        <a href="javascript:void(0)" onclick="openBuyAgainModal()"><i class="bi bi-arrow-repeat me-1 text-primary"></i>Buy Again</a>
+        <a href="/seller" class="text-info fw-semibold"><i class="bi bi-building me-1"></i>Seller Central</a>
+        <a href="/admin-seller" class="text-success fw-semibold"><i class="bi bi-shield-check me-1"></i>Admin Verify</a>
+        <a href="/delivery" class="text-warning fw-semibold" target="_blank"><i class="bi bi-truck me-1"></i>Delivery Partner</a>
+        <a href="javascript:void(0)" onclick="openOrdersModal()"><i class="bi bi-box-seam me-1 text-warning"></i>Orders & Tracking</a>
+        <a href="javascript:void(0)" onclick="openWalletModal()"><i class="bi bi-wallet2 me-1 text-success"></i>Wallet (₹<span id="subnavWallet">5,000</span>)</a>
+        <a href="javascript:void(0)" onclick="openRewardsModal()"><i class="bi bi-gem me-1 text-info"></i>Rewards 💎</a>
+        <a href="javascript:void(0)" onclick="openHelplineModal()" class="text-warning fw-bold"><i class="bi bi-headset me-1"></i>24x7 Helpline: 9909665466</a>
+        <a href="javascript:void(0)" onclick="openFaqModal()" class="text-light"><i class="bi bi-question-circle me-1"></i>FAQ</a>
         <a href="javascript:void(0)" onclick="openCopilot('chat')" class="text-warning fw-bold ms-auto"><i class="bi bi-chat-dots-fill me-1"></i>Ask AI Copilot</a>
     </nav>
 
@@ -1619,6 +1648,206 @@
                 </div>
             </div>
         </div>
+    <!-- FLOATING 24x7 HELPLINE BUTTON -->
+    <button id="btnFloatingHelpline" class="btn btn-warning rounded-circle shadow-lg position-fixed" style="bottom: 90px; right: 24px; width: 56px; height: 56px; z-index: 1040; display: flex; align-items: center; justify-content: center;" onclick="openHelplineModal()" title="24x7 Customer Helpline (9909665466)">
+        <i class="bi bi-headset fs-4 text-dark"></i>
+    </button>
+
+    <!-- MODAL 7: 24x7 CUSTOMER HELPLINE WITH CALL TUNE (9909665466) -->
+    <div class="modal fade" id="helplineModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-headset text-warning me-2"></i>Amazon Priority Care 24x7</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="rounded-circle bg-warning-subtle text-warning d-inline-flex align-items-center justify-content-center p-3 mb-3 border border-warning shadow-sm" style="width: 80px; height: 80px;">
+                        <i class="bi bi-telephone-outbound-fill fs-1 text-dark"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Customer Priority Helpline</h4>
+                    <p class="text-muted small mb-3">Connecting to dedicated Amazon Customer Assistance Associate</p>
+
+                    <div class="p-3 bg-light border rounded mb-3">
+                        <div class="text-muted small mb-1">Direct Dial Contact Number:</div>
+                        <div class="fs-3 fw-bold text-dark font-monospace">+91 99096 65466</div>
+                        <div class="badge bg-success mt-1"><i class="bi bi-check-circle me-1"></i>Toll-Free & 24/7 Online</div>
+                    </div>
+
+                    <!-- Call Tune Indicator / Audio Wave Pulse -->
+                    <div id="callTuneStatus" class="alert alert-warning py-2 small mb-3 d-none">
+                        <span class="spinner-grow spinner-grow-sm me-2 text-warning"></span>
+                        <span id="callTuneStatusText">Playing Amazon Helper Ring Tune & Connecting...</span>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="tel:9909665466" onclick="playAmazonHelperCallTune()" class="btn btn-warning fw-bold py-2 text-dark shadow-sm fs-6">
+                            <i class="bi bi-telephone-fill me-2"></i>Call Helpline Now (9909665466)
+                        </a>
+                        <button type="button" class="btn btn-outline-dark btn-sm py-2" onclick="testCallTunePreview()">
+                            <i class="bi bi-music-note-beamed me-1"></i>Play Amazon Helper Call Tune 🎵
+                        </button>
+                    </div>
+
+                    <div class="border-top pt-3 text-start small">
+                        <div class="fw-bold text-secondary mb-2">Instant Policy Assistance:</div>
+                        <ul class="list-unstyled mb-0 text-muted">
+                            <li class="mb-1"><i class="bi bi-arrow-return-left text-primary me-2"></i><strong>10-Day Returns:</strong> Free doorstep inspection & pickup.</li>
+                            <li class="mb-1"><i class="bi bi-wallet2 text-success me-2"></i><strong>Instant Refunds:</strong> Credited to wallet right at your doorstep.</li>
+                            <li class="mb-1"><i class="bi bi-truck text-warning me-2"></i><strong>Logistics Tracking:</strong> Direct rider phone & OTP verification.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2 d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openFaqModal()">
+                        <i class="bi bi-question-circle me-1"></i>View FAQ Center
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 8: CUSTOMER FAQ ACCORDION -->
+    <div class="modal fade" id="faqModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-patch-question text-warning me-2"></i>Frequently Asked Questions & Customer Policies</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <i class="bi bi-arrow-counterclockwise text-primary me-2"></i>What is the 10-Day Return Policy for Electronics?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    All laptops, desktops, and computer hardware purchased on our platform are backed by a <strong>strict 10-day return policy</strong> from order delivery date. Within 10 days, you can request a return from your Orders tab for any hardware issue, performance defect, or wrong product received. Orders older than 10 days are locked under policy.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <i class="bi bi-house-check text-success me-2"></i>How does Doorstep Return Inspection & Instant Wallet Refund work?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    When you submit a return, a certified delivery associate (ATS, Blue Dart, or Delhivery) is dispatched to your doorstep. The associate conducts a physical check (original packaging, display/body condition, included power adapter, and serial number). Upon passing inspection, the delivery associate <strong>approves the return directly on their smartphone</strong>, and your purchase amount is <strong>instantly credited to your Amazon Wallet</strong>!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <i class="bi bi-shield-check text-warning me-2"></i>How does Delivery OTP and Live Courier Tracking protect me?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    Every outbound order is assigned a verified courier firm (such as Amazon Transportation Services ATS or Blue Dart) and a unique 4-digit Delivery OTP visible in your Orders tab. The delivery partner cannot complete delivery without entering this OTP at your doorstep, guaranteeing secure handover.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <i class="bi bi-fire text-danger me-2"></i>How do Limited Time Deals & Instant Cashback work?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    Products marked with Limited Time Deals feature direct promotional percentage discounts (up to 25% off) or direct Wallet Cashback (e.g. ₹1,500 to ₹5,000). When you purchase a cashback deal, the cash reward is credited directly to your Amazon Wallet as soon as your order is confirmed!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    <i class="bi bi-building-check text-info me-2"></i>How does Seller Quality & BIS Standards Verification work?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    Every third-party seller submits manufacturing license documentation, factory addresses, and ISO/BIS safety certifications through Seller Central. Amazon Compliance Reviewers verify these credentials before any product is activated in the storefront catalog.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-2 border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                    <i class="bi bi-headset text-dark me-2"></i>How do I contact customer care or trigger AI helper support?
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small text-muted">
+                                    You can dial our priority customer care line at <strong>+91 9909665466</strong> anytime 24x7, or simply type <code>/help</code> in the AI Shopping Copilot chat to initiate instant assistance!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2">
+                    <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" onclick="openHelplineModal()">
+                        <i class="bi bi-telephone-fill me-1"></i>Call Helpline (9909665466)
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 9: REQUEST DOORSTEP RETURN (<10 DAYS) -->
+    <div class="modal fade" id="returnRequestModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h6 class="modal-title fw-bold">
+                        <i class="bi bi-arrow-counterclockwise text-warning me-2"></i>Request Doorstep Return (&lt;10 Days)
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="alert alert-warning py-2 small mb-3">
+                        <i class="bi bi-clock-history me-1"></i> Amazon 10-Day Return Policy: Free pickup at your doorstep with instant wallet refund on delivery associate approval.
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small text-muted mb-0">Order Number:</label>
+                        <div class="fw-bold text-primary" id="returnModalOrderNum">OD-SAMPLE</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Reason for Return:</label>
+                        <select id="returnReasonSelect" class="form-select form-select-sm">
+                            <option value="Defective hardware / Performance issue">Defective hardware / Performance issue</option>
+                            <option value="Display flickering / Screen defect">Display flickering / Screen defect</option>
+                            <option value="Not as described / Specification mismatch">Not as described / Specification mismatch</option>
+                            <option value="Packaging damaged on arrival">Packaging damaged on arrival</option>
+                            <option value="Changed mind / Accidental purchase">Changed mind / Accidental purchase</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Additional Comments / Condition Details:</label>
+                        <textarea id="returnCommentText" class="form-control form-control-sm" rows="2" placeholder="Original box and charger are preserved and ready for pickup associate."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="submitReturnRequest()">
+                        <i class="bi bi-truck me-1"></i>Schedule Doorstep Pickup
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- TOAST NOTIFICATION FOR ADD TO CART -->
@@ -1635,7 +1864,8 @@
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS -->
+    <!-- jQuery 3.7.1 & Bootstrap Bundle JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -1663,6 +1893,11 @@
             loadUserProfile();
             loadWalletInfo();
             loadCartCount();
+
+            // Auto-open Copilot drawer if accessing /chat or query param ?open_copilot=1
+            if (window.location.pathname.endsWith("/chat") || new URLSearchParams(window.location.search).get("open_copilot")) {
+                setTimeout(() => openCopilot('chat'), 350);
+            }
 
             // Search input Enter key trigger
             document.getElementById("searchInput").addEventListener("keypress", (e) => {
@@ -1712,6 +1947,27 @@
             });
         });
 
+        let activeDealsOnly = false;
+
+        function filterDealsOnly(el) {
+            activeDealsOnly = !activeDealsOnly;
+            const btn = document.getElementById("subnavDealsBtn");
+            if (btn) {
+                btn.classList.toggle("bg-danger", activeDealsOnly);
+                btn.classList.toggle("text-white", activeDealsOnly);
+                btn.classList.toggle("px-2", activeDealsOnly);
+                btn.classList.toggle("rounded", activeDealsOnly);
+            }
+            const badge = document.getElementById("activeSearchBadge");
+            if (activeDealsOnly) {
+                badge.classList.remove("d-none");
+                document.getElementById("activeSearchQuery").textContent = "⚡ Limited Time Deals";
+            } else if (!activeSearch) {
+                badge.classList.add("d-none");
+            }
+            loadProducts(1);
+        }
+
         // LOAD PRODUCTS FROM API
         async function loadProducts(page = 1) {
             currentPage = page;
@@ -1724,6 +1980,7 @@
             `;
 
             let url = `/api/products?page=${page}&limit=24`;
+            if (activeDealsOnly) url += `&deals_only=true`;
             if (activeSearch) url += `&search=${encodeURIComponent(activeSearch)}`;
             if (activeCategory && activeCategory !== "all") url += `&category=${encodeURIComponent(activeCategory)}`;
             
@@ -1772,7 +2029,7 @@
             grid.innerHTML = products.map(p => {
                 const isCompared = compareList.some(item => item.asin === p.asin);
                 const specs = p.specs || {};
-                const priceINR = p.price_inr ? `₹${Number(p.price_inr).toLocaleString('en-IN', {maximumFractionDigits: 2})}` : '--';
+                const priceINR = p.price_inr ? `₹${Number(p.price_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})}` : '--';
                 const originalUSD = p.price ? `$${Number(p.price).toFixed(2)}` : '';
                 
                 // Safe image proxy
@@ -1788,12 +2045,76 @@
                 const starsCount = Math.round(Number(p.stars || 4.5));
                 const starsHtml = '★'.repeat(starsCount) + '☆'.repeat(Math.max(0, 5 - starsCount));
 
+                // Deal calculations
+                const deal = p.deal || {};
+                const hasDeal = deal.is_deal_active && deal.deal_type && deal.deal_type !== 'none';
+                let dealBadgeHtml = '';
+                let priceBoxHtml = '';
+                let checkoutPriceInr = p.price_inr;
+
+                if (hasDeal) {
+                    if (deal.deal_type === 'limited_time_deal') {
+                        dealBadgeHtml = `<span class="badge bg-danger rounded-pill fw-bold text-white mb-1" style="font-size: 0.72rem;"><i class="bi bi-fire me-1"></i>Limited time deal</span>`;
+                    } else if (deal.deal_type === 'deal_of_the_day') {
+                        dealBadgeHtml = `<span class="badge bg-warning text-dark rounded-pill fw-bold mb-1" style="font-size: 0.72rem;"><i class="bi bi-lightning-fill me-1"></i>Deal of the Day</span>`;
+                    } else {
+                        dealBadgeHtml = `<span class="badge bg-primary rounded-pill fw-bold text-white mb-1" style="font-size: 0.72rem;"><i class="bi bi-lightning-charge-fill me-1"></i>Lightning Deal</span>`;
+                    }
+
+                    if (deal.discount_type === 'percentage' && deal.discount_percentage > 0) {
+                        checkoutPriceInr = deal.deal_price_inr || p.price_inr;
+                        const mrp = p.original_mrp_inr || deal.original_mrp_inr || (checkoutPriceInr * 1.25);
+                        priceBoxHtml = `
+                            <div class="product-price-box">
+                                <span class="badge bg-danger fs-6 fw-bold me-1">-${deal.discount_percentage}%</span>
+                                <span class="price-inr text-danger">₹${Number(checkoutPriceInr).toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                                <span class="text-secondary text-decoration-line-through small ms-1">M.R.P.: ₹${Number(mrp).toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                                <span class="prime-badge ms-auto">Prime</span>
+                            </div>
+                        `;
+                    } else if (deal.discount_type === 'cashback' && deal.cashback_inr > 0) {
+                        priceBoxHtml = `
+                            <div class="product-price-box">
+                                <span class="price-inr">${priceINR}</span>
+                                <span class="badge bg-success rounded-pill fw-bold ms-1" title="Instant Wallet Cashback"><i class="bi bi-wallet2 me-1"></i>₹${Number(deal.cashback_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})} Cashback</span>
+                                <span class="prime-badge ms-auto">Prime</span>
+                            </div>
+                            <div class="text-success fw-bold" style="font-size: 0.75rem;"><i class="bi bi-check2-circle me-1"></i>Instant ₹${Number(deal.cashback_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})} Wallet Credit on Order</div>
+                        `;
+                    } else {
+                        priceBoxHtml = `
+                            <div class="product-price-box">
+                                <span class="price-inr">${priceINR}</span>
+                                <span class="prime-badge">Prime</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    priceBoxHtml = `
+                        <div class="product-price-box">
+                            <span class="price-inr">${priceINR}</span>
+                            ${originalUSD ? `<span class="price-original">${originalUSD}</span>` : ''}
+                            <span class="prime-badge">Prime</span>
+                        </div>
+                    `;
+                }
+
+                // Verified Seller & Quality Inspection badges
+                let verifiedBadgeHtml = '';
+                if (p.seller_info) {
+                    verifiedBadgeHtml += `<div class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-patch-check-fill text-primary me-1"></i>Verified Seller: <strong>${escapeHtml(p.seller_info.name || p.brand)}</strong></div>`;
+                }
+                if (p.quality_info) {
+                    verifiedBadgeHtml += `<div class="text-success" style="font-size: 0.7rem;"><i class="bi bi-shield-check me-1"></i><strong>Quality Tested:</strong> ${escapeHtml(p.quality_info.certifications ? p.quality_info.certifications.split(',')[0] : 'BIS/ISO Certified')}</div>`;
+                }
+
                 return `
                     <div class="col-xl-3 col-lg-4 col-sm-6">
                         <div class="product-card">
                             <div class="product-img-wrap" onclick="viewProductDetail('${p.asin}')">
                                 <img src="${imgUrl}" class="product-img" alt="${p.title}" loading="lazy">
                             </div>
+                            ${dealBadgeHtml ? `<div class="px-2 pt-1">${dealBadgeHtml}</div>` : ''}
                             <div class="product-brand">${p.brand || 'Computer'}</div>
                             <div class="product-title" onclick="viewProductDetail('${p.asin}')" title="${p.title}">
                                 ${p.title}
@@ -1802,17 +2123,14 @@
                                 <span>${starsHtml}</span>
                                 <span class="product-reviews">(${p.reviews_count || 12})</span>
                             </div>
-                            <div class="product-price-box">
-                                <span class="price-inr">${priceINR}</span>
-                                ${originalUSD ? `<span class="price-original">${originalUSD}</span>` : ''}
-                                <span class="prime-badge">Prime</span>
-                            </div>
+                            ${priceBoxHtml}
+                            ${verifiedBadgeHtml ? `<div class="px-1 mt-1">${verifiedBadgeHtml}</div>` : ''}
                             <div class="specs-pills">
                                 ${specPills.join('')}
                             </div>
                             <div class="card-actions">
                                 <div class="d-flex gap-2">
-                                    <a href="/checkout?asin=${p.asin}&title=${encodeURIComponent(p.title)}&currency=INR&price_inr=${p.price_inr || ''}&price=${p.price || ''}&image=${encodeURIComponent(p.image || '')}" class="btn-buy-now flex-grow-1">
+                                    <a href="/checkout?asin=${p.asin}&title=${encodeURIComponent(p.title)}&currency=INR&price_inr=${checkoutPriceInr || ''}&price=${p.price || ''}&image=${encodeURIComponent(p.image || '')}${deal && deal.cashback_inr ? `&cashback_inr=${deal.cashback_inr}` : ''}" class="btn-buy-now flex-grow-1">
                                         <i class="bi bi-lightning-charge-fill text-dark"></i> Buy Now
                                     </a>
                                     <button class="btn btn-sm btn-outline-dark fw-bold px-3 rounded-pill" onclick="addToCartByAsin('${p.asin}')" title="Add to Cart">
@@ -2011,17 +2329,19 @@
         }
 
         // OFFCANVAS COPILOT
-        const copilotDrawer = new bootstrap.Offcanvas(document.getElementById('copilotDrawer'));
-
         function openCopilot(mode = 'chat') {
-            copilotDrawer.show();
+            const drawerEl = document.getElementById('copilotDrawer');
+            if (drawerEl) {
+                const drawer = bootstrap.Offcanvas.getOrCreateInstance(drawerEl);
+                drawer.show();
+            }
             if (mode === 'compare') {
-                const compareTab = new bootstrap.Tab(document.getElementById('compare-tab'));
-                compareTab.show();
+                const compareTabEl = document.getElementById('compare-tab');
+                if (compareTabEl) bootstrap.Tab.getOrCreateInstance(compareTabEl).show();
             } else {
-                const chatTab = new bootstrap.Tab(document.getElementById('chat-tab'));
-                chatTab.show();
-                setTimeout(() => document.getElementById("copilotInput").focus(), 300);
+                const chatTabEl = document.getElementById('chat-tab');
+                if (chatTabEl) bootstrap.Tab.getOrCreateInstance(chatTabEl).show();
+                setTimeout(() => document.getElementById("copilotInput")?.focus(), 300);
             }
         }
 
@@ -2106,6 +2426,8 @@
                     toolBadge = `<span class="badge bg-success mb-2 text-uppercase" style="font-size: 10px;"><i class="bi bi-person-check-fill me-1"></i>Persona Saved (/iam)</span>`;
                 } else if (data.tool_used === "persona_fetcher") {
                     toolBadge = `<span class="badge bg-info text-dark mb-2 text-uppercase" style="font-size: 10px;"><i class="bi bi-person-badge-fill me-1"></i>/me Information Fetcher</span>`;
+                } else if (data.tool_used === "customer_support_help") {
+                    toolBadge = `<span class="badge bg-warning text-dark mb-2 text-uppercase" style="font-size: 10px;"><i class="bi bi-headset me-1"></i>Amazon 24x7 Helpline Tool (9909665466)</span>`;
                 } else if (data.tool_used === "assistant_identity") {
                     toolBadge = `<span class="badge bg-primary mb-2 text-uppercase" style="font-size: 10px;"><i class="bi bi-robot me-1"></i>Copilot Identity</span>`;
                 } else if (data.tool_used === "formatted_product_info") {
@@ -2120,14 +2442,33 @@
                     toolBadge = `<span class="badge bg-warning text-dark mb-2 text-uppercase" style="font-size: 10px;"><i class="bi bi-code-slash me-1"></i>Assistant Tool</span>`;
                 }
 
-                const replyHtml = (toolBadge ? `<div>${toolBadge}</div>` : "") + marked.parse(data.reply || "I am ready to help.");
+                const parseMd = (content) => {
+                    try {
+                        if (typeof marked !== 'undefined' && marked && marked.parse) {
+                            return marked.parse(content || "");
+                        }
+                    } catch (e) {}
+                    return String(content || "").replace(/\n/g, '<br>');
+                };
+
+                const replyHtml = (toolBadge ? `<div>${toolBadge}</div>` : "") + parseMd(data.reply || "I am ready to help.");
                 
                 // Replace loading placeholder
-                const bubble = document.getElementById(placeholderId).parentElement;
-                bubble.innerHTML = replyHtml;
+                const placeholderEl = document.getElementById(placeholderId);
+                const bubble = placeholderEl ? placeholderEl.parentElement : null;
+                if (bubble) {
+                    bubble.innerHTML = replyHtml;
+                    // Fix chat table overflow using jQuery & Bootstrap
+                    fixChatTables(bubble);
+                }
+
+                // Auto-trigger helpline tune if user requested customer care
+                if (data.trigger_call_modal || data.tool_used === "customer_support_help") {
+                    playAmazonHelperCallTune();
+                }
 
                 // Quick action button to view in Person's Information Window
-                if (data.tool_used === "persona_iam_setter" || data.tool_used === "persona_fetcher") {
+                if (bubble && (data.tool_used === "persona_iam_setter" || data.tool_used === "persona_fetcher")) {
                     bubble.innerHTML += `
                         <div class="mt-2 pt-1 border-top">
                             <button class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill small" onclick="openProfileModal();" style="font-size: 11px;">
@@ -2138,7 +2479,7 @@
                 }
 
                 // If persona not found, provide prompt chip
-                if (data.tool_used === "persona_fetcher" && data.persona_found === false) {
+                if (bubble && data.tool_used === "persona_fetcher" && data.persona_found === false) {
                     const chipsHtml = `
                         <div class="mt-2 pt-2 border-top d-flex gap-1 flex-wrap">
                             <span class="prompt-chip" onclick="askPrompt('/iam I am person A and I am a college student from XYZ college studying computer science looking for a laptop under ₹60,000')">📝 Use /iam (Student @ XYZ College)</span>
@@ -2149,7 +2490,7 @@
                 }
 
                 // If recommended products were returned, append quick cards
-                if (data.recommended_products && data.recommended_products.length > 0) {
+                if (bubble && data.recommended_products && data.recommended_products.length > 0) {
                     let recCards = `<div class="mt-3 pt-2 border-top"><div class="fw-bold small text-secondary mb-2">Recommended Picks:</div>`;
                     data.recommended_products.slice(0, 3).forEach(p => {
                         const inrPriceVal = p.price_inr ? Number(p.price_inr) : (p.price ? Number(p.price) * 96.3 : null);
@@ -2177,8 +2518,11 @@
                 chatHistory.push({ role: "assistant", content: data.reply });
             } catch (err) {
                 console.error("Chat error:", err);
-                const bubble = document.getElementById(placeholderId).parentElement;
-                bubble.innerHTML = `<span class="text-danger">Failed to connect with AI copilot.</span>`;
+                const placeholderEl = document.getElementById(placeholderId);
+                const bubble = placeholderEl ? placeholderEl.parentElement : null;
+                if (bubble) {
+                    bubble.innerHTML = `<span class="text-danger">Failed to connect with AI copilot. (${err.message || 'Error'})</span>`;
+                }
             }
         }
 
@@ -2188,6 +2532,7 @@
             div.className = `msg-bubble ${role === 'user' ? 'msg-user' : 'msg-bot'}`;
             div.innerHTML = html;
             container.appendChild(div);
+            fixChatTables(div);
             container.scrollTop = container.scrollHeight;
         }
 
@@ -2292,6 +2637,7 @@
                 } else {
                     botMsg.innerHTML = finalHtml;
                 }
+                fixChatTables(thread);
 
                 compareFollowupHistory.push({ role: "user", content: query });
                 compareFollowupHistory.push({ role: "assistant", content: data.reply });
@@ -2321,7 +2667,80 @@
                 const p = data.product || {};
                 const specs = data.specs || {};
                 const reviews = data.reviews || [];
-                const priceINR = p.price ? `₹${Number(p.price * 96.3).toLocaleString('en-IN', {maximumFractionDigits: 2})}` : '--';
+                const deal = data.deal || {};
+                const seller = data.seller || {};
+                const quality = data.quality_verification || {};
+                const hasDeal = deal.is_deal_active && deal.deal_type && deal.deal_type !== 'none';
+
+                let priceINR = p.price ? `₹${Number(p.price * 96.3).toLocaleString('en-IN', {maximumFractionDigits: 0})}` : '--';
+                let checkoutPriceInr = p.price ? (p.price * 96.3).toFixed(2) : '';
+                let dealBannerHtml = '';
+                let displayPriceHtml = '';
+
+                if (hasDeal) {
+                    if (deal.discount_type === 'percentage' && deal.discount_percentage > 0) {
+                        checkoutPriceInr = deal.deal_price_inr;
+                        dealBannerHtml = `
+                            <div class="alert alert-danger py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-danger rounded-pill fw-bold me-2">⚡ ${deal.deal_type === 'limited_time_deal' ? 'Limited Time Deal' : 'Deal of the Day'}</span>
+                                    <strong class="text-danger">${deal.discount_percentage}% OFF</strong>
+                                    <span class="small text-secondary ms-2">${deal.deal_headline || ''}</span>
+                                </div>
+                                <div class="badge bg-dark text-warning"><i class="bi bi-clock-history me-1"></i>Ends in 48h</div>
+                            </div>
+                        `;
+                        displayPriceHtml = `
+                            <div class="mb-3">
+                                <span class="badge bg-danger fs-6 fw-bold me-2">-${deal.discount_percentage}%</span>
+                                <span class="fs-4 fw-bold text-danger">₹${Number(deal.deal_price_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                                <span class="text-secondary text-decoration-line-through ms-2">M.R.P.: ₹${Number(deal.original_mrp_inr || p.list_price || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                                <span class="badge bg-success ms-2">In Stock</span>
+                            </div>
+                        `;
+                    } else if (deal.discount_type === 'cashback' && deal.cashback_inr > 0) {
+                        dealBannerHtml = `
+                            <div class="alert alert-success py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-success rounded-pill fw-bold me-2"><i class="bi bi-wallet2 me-1"></i>Cashback Deal</span>
+                                    <strong class="text-success">₹${Number(deal.cashback_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})} Instant Wallet Credit</strong>
+                                    <span class="small text-secondary ms-2">${deal.deal_headline || ''}</span>
+                                </div>
+                                <div class="badge bg-dark text-warning"><i class="bi bi-clock-history me-1"></i>Ends in 72h</div>
+                            </div>
+                        `;
+                        displayPriceHtml = `
+                            <div class="mb-3">
+                                <span class="fs-4 fw-bold text-dark">₹${Number(p.price_inr || (p.price * 96.3)).toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                                <span class="badge bg-success rounded-pill fw-bold ms-2"><i class="bi bi-wallet2 me-1"></i>₹${Number(deal.cashback_inr).toLocaleString('en-IN', {maximumFractionDigits: 0})} Cashback</span>
+                                <span class="badge bg-success ms-2">In Stock</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    displayPriceHtml = `<div class="fs-4 fw-bold text-dark mb-3">${priceINR} <span class="badge bg-success ms-2">In Stock</span></div>`;
+                }
+
+                let verificationHtml = '';
+                if (seller.name || quality.manufacturer_name) {
+                    verificationHtml = `
+                        <div class="card bg-light border-0 p-3 mb-3 small">
+                            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-shield-check me-1"></i> Amazon Verified Seller & Manufacturing Compliance</h6>
+                            <div class="row g-2">
+                                <div class="col-sm-6">
+                                    <div><strong>Seller:</strong> ${escapeHtml(seller.name || 'Verified Partner')}</div>
+                                    <div><strong>Manufacturer:</strong> ${escapeHtml(quality.manufacturer_name || seller.name || 'Approved Manufacturer')}</div>
+                                    <div><strong>Plant Address:</strong> ${escapeHtml(quality.factory_address || 'Certified Facility')}</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div><strong>Mfg License:</strong> <code>${escapeHtml(quality.license_no || 'MFG-VERIFIED-2026')}</code></div>
+                                    <div><strong>Quality Standard:</strong> <span class="badge bg-success">${escapeHtml(quality.certifications || 'BIS Certified / ISO 9001')}</span></div>
+                                    <div><strong>Warranty:</strong> ${escapeHtml(quality.warranty_terms || '1 Year Manufacturer Warranty')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 let specsHtml = "";
                 if (specs) {
@@ -2347,9 +2766,10 @@
                             <div class="text-muted small text-uppercase fw-bold">${p.brand || 'Computer'}</div>
                             <h5 class="fw-bold mt-1">${p.title}</h5>
                             <div class="text-warning small mb-2">★★★★☆ <span class="text-primary">(${p.reviews_count || 15} customer reviews)</span></div>
-                            <div class="fs-4 fw-bold text-dark mb-3">${priceINR} <span class="badge bg-success ms-2">In Stock</span></div>
+                            ${dealBannerHtml}
+                            ${displayPriceHtml}
                             <div class="d-flex gap-2 mb-3">
-                                <a href="/checkout?asin=${encodeURIComponent(p.asin)}&title=${encodeURIComponent(p.title)}&currency=INR&price_inr=${p.price ? (p.price * 96.3).toFixed(2) : ''}&price=${encodeURIComponent(p.price || '')}&image=${encodeURIComponent(p.image_url || '')}" class="btn btn-warning fw-bold flex-grow-1">
+                                <a href="/checkout?asin=${encodeURIComponent(p.asin)}&title=${encodeURIComponent(p.title)}&currency=INR&price_inr=${checkoutPriceInr}&price=${encodeURIComponent(p.price || '')}&image=${encodeURIComponent(p.image_url || '')}${deal && deal.cashback_inr ? `&cashback_inr=${deal.cashback_inr}` : ''}" class="btn btn-warning fw-bold flex-grow-1">
                                     <i class="bi bi-credit-card me-1"></i> Buy Now with Razorpay
                                 </a>
                                 <button class="btn btn-outline-warning text-dark fw-bold" onclick="addToCartByAsin('${p.asin}'); productModal.hide();">
@@ -2359,6 +2779,7 @@
                                     <i class="bi bi-arrow-left-right me-1"></i> Add to Compare
                                 </button>
                             </div>
+                            ${verificationHtml}
                             <h6>Technical Specifications</h6>
                             ${specsHtml}
                             <h6 class="mt-3">Description</h6>
@@ -2762,8 +3183,46 @@
                                 </div>
                             </div>
 
+                            <!-- COURIER LOGISTICS FIRM & DELIVERY ASSOCIATE INFO -->
+                            <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded my-2 small flex-wrap gap-2 border">
+                                <div>
+                                    <i class="bi bi-truck text-primary me-1"></i><strong>Courier Partner:</strong> ${order.logistics_firm || 'Amazon Transportation Services (ATS)'}
+                                    ${order.delivery_agent_name ? ` · <strong>Associate:</strong> ${order.delivery_agent_name} (${order.delivery_agent_badge || 'ATS-8821'}, <a href="tel:${order.delivery_agent_phone || '9909665466'}" class="text-decoration-none fw-bold">${order.delivery_agent_phone || '+91 98765 12044'}</a>)` : ''}
+                                </div>
+                                <div>
+                                    <span class="text-muted">Delivery OTP:</span>
+                                    <span class="badge bg-warning text-dark font-monospace fw-bold">${order.delivery_otp || '4821'}</span>
+                                </div>
+                            </div>
+
+                            <!-- DOORSTEP RETURN STATUS ALERTS -->
+                            ${order.return_status === 'approved' || order.status === 'returned' ? `
+                                <div class="alert alert-success py-2 my-2 small border-success">
+                                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                                    <strong>Doorstep Return Approved & Refunded:</strong> Item inspected at your doorstep by Delivery Associate ${order.delivery_agent_name || ''}. Full refund of <strong>₹${Number(order.total_inr).toLocaleString('en-IN')}</strong> was instantly credited to your Amazon Wallet.
+                                </div>
+                            ` : ''}
+
+                            ${order.return_status === 'pickup_assigned' ? `
+                                <div class="alert alert-warning py-2 my-2 small border-warning">
+                                    <i class="bi bi-truck-flatbed text-warning me-1"></i>
+                                    <strong>Doorstep Return Pickup Scheduled (&lt;10d Policy):</strong> Delivery associate ${order.delivery_agent_name || 'Rajesh Kumar'} (${order.logistics_firm || 'ATS'}) will inspect item condition at your residence.
+                                    <div class="mt-1">
+                                        <strong>Doorstep Inspection OTP:</strong> <span class="badge bg-dark text-warning font-monospace fs-6">${order.return_otp || '7294'}</span>
+                                        <span class="text-muted ms-2">(Provide to associate on arrival. Refund credited to wallet upon approval.)</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            ${order.return_status === 'rejected' ? `
+                                <div class="alert alert-danger py-2 my-2 small border-danger">
+                                    <i class="bi bi-ban text-danger me-1"></i>
+                                    <strong>Doorstep Return Rejected:</strong> Physical inspection criteria failed (${order.return_notes || 'Damage or serial mismatch'}).
+                                </div>
+                            ` : ''}
+
                             <!-- STEP TRACKER -->
-                            ${!isCancelled ? `
+                            ${!isCancelled && order.status !== 'returned' ? `
                                 <div class="tracking-timeline">
                                     <div class="timeline-step ${step1 ? 'active' : ''}">
                                         <div class="step-circle"><i class="bi bi-receipt"></i></div>
@@ -2782,11 +3241,11 @@
                                         <div class="step-label">Delivered</div>
                                     </div>
                                 </div>
-                            ` : `
+                            ` : (isCancelled ? `
                                 <div class="alert alert-danger py-2 my-2 small">
                                     <i class="bi bi-x-circle me-1"></i>This order has been cancelled and refunded to your Amazon Wallet.
                                 </div>
-                            `}
+                            ` : '')}
 
                             <!-- ITEMS -->
                             <div class="mt-2">${itemsHtml}</div>
@@ -2799,14 +3258,32 @@
                                 <div class="mt-2">${logsHtml}</div>
                             </details>
 
-                            <!-- CANCEL BUTTON -->
-                            ${!isCancelled ? `
-                                <div class="text-end mt-2 pt-2 border-top">
-                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('${order.order_number}')">
-                                        <i class="bi bi-x-circle me-1"></i>Cancel Order (Instant Wallet Refund)
-                                    </button>
+                            <!-- ACTIONS: RETURN (<10 DAYS) & CANCEL -->
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top flex-wrap gap-2">
+                                <div>
+                                    ${order.is_return_eligible ? `
+                                        <span class="badge bg-success-subtle text-success border border-success">
+                                            <i class="bi bi-arrow-return-left me-1"></i>Eligible for Return (${order.return_window_days_left}d left of 10-day window)
+                                        </span>
+                                    ` : (order.status !== 'returned' && !isCancelled && order.return_status === 'none' ? `
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-lock me-1"></i>Return Window Closed (&gt;10 Days from order)
+                                        </span>
+                                    ` : '')}
                                 </div>
-                            ` : ''}
+                                <div class="d-flex gap-2">
+                                    ${order.is_return_eligible ? `
+                                        <button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="openReturnModal('${order.order_number}')">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Request Doorstep Return (&lt;10d)
+                                        </button>
+                                    ` : ''}
+                                    ${!isCancelled && order.status !== 'returned' && order.return_status !== 'approved' ? `
+                                        <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('${order.order_number}')">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel Order
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -2891,6 +3368,125 @@
         function openRewardsModal() { new bootstrap.Modal(document.getElementById("rewardsModal")).show(); }
         function openLoginModal() { new bootstrap.Modal(document.getElementById("loginModal")).show(); }
         function openProfileModal() { new bootstrap.Modal(document.getElementById("profileModal")).show(); }
+
+        // JQUERY & BOOTSTRAP CHAT TABLE OVERFLOW FIX
+        function fixChatTables(container) {
+            try {
+                if (typeof $ !== 'undefined') {
+                    const root = container ? $(container) : $(document);
+                    root.find('table').each(function() {
+                        const $tbl = $(this);
+                        if (!$tbl.parent().hasClass('table-responsive')) {
+                            $tbl.addClass('table table-sm table-striped table-hover mb-0 text-dark align-middle')
+                                .css({ 'font-size': '0.8rem', 'min-width': '420px' });
+                            $tbl.wrap('<div class="table-responsive my-2 rounded border shadow-sm bg-white" style="max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;"></div>');
+                        }
+                    });
+                } else {
+                    const tables = (container || document).querySelectorAll('table');
+                    tables.forEach(tbl => {
+                        if (!tbl.parentElement.classList.contains('table-responsive')) {
+                            tbl.className = 'table table-sm table-striped table-hover mb-0 text-dark align-middle';
+                            tbl.style.fontSize = '0.8rem';
+                            tbl.style.minWidth = '420px';
+                            const wrap = document.createElement('div');
+                            wrap.className = 'table-responsive my-2 rounded border shadow-sm bg-white';
+                            wrap.style.maxWidth = '100%';
+                            wrap.style.overflowX = 'auto';
+                            wrap.style.webkitOverflowScrolling = 'touch';
+                            tbl.parentNode.insertBefore(wrap, tbl);
+                            wrap.appendChild(tbl);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn("Table styling helper:", e);
+            }
+        }
+
+        // AMAZON HELPER CALL TUNE SYNTHESIZER (Web Audio API)
+        function playAmazonHelperCallTune() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                // Pleasant 4-tone ascending harmonic chime (C5, E5, G5, C6)
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.14);
+                    gain.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.14);
+                    gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + i * 0.14 + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.14 + 0.32);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + i * 0.14);
+                    osc.stop(ctx.currentTime + i * 0.14 + 0.34);
+                });
+            } catch (e) {
+                console.warn("Audio chime:", e);
+            }
+        }
+        window.triggerAmazonHelperCallTune = playAmazonHelperCallTune;
+
+        function testCallTunePreview() {
+            const statusEl = document.getElementById('callTuneStatus');
+            const textEl = document.getElementById('callTuneStatusText');
+            if (statusEl) statusEl.classList.remove('d-none');
+            if (textEl) textEl.textContent = "🎵 Playing Amazon Helper Ring Tune chime...";
+            playAmazonHelperCallTune();
+            setTimeout(() => {
+                if (statusEl) statusEl.classList.add('d-none');
+            }, 2500);
+        }
+
+        function openHelplineModal() {
+            playAmazonHelperCallTune();
+            new bootstrap.Modal(document.getElementById("helplineModal")).show();
+        }
+
+        function openFaqModal() {
+            new bootstrap.Modal(document.getElementById("faqModal")).show();
+        }
+
+        // RETURN MODAL (<10 DAYS CONSTRAINT)
+        let activeReturnOrderNum = null;
+        function openReturnModal(orderNumber) {
+            activeReturnOrderNum = orderNumber;
+            const orderEl = document.getElementById('returnModalOrderNum');
+            if (orderEl) orderEl.textContent = orderNumber;
+            const commentEl = document.getElementById('returnCommentText');
+            if (commentEl) commentEl.value = '';
+            new bootstrap.Modal(document.getElementById("returnRequestModal")).show();
+        }
+
+        async function submitReturnRequest() {
+            if (!activeReturnOrderNum) return;
+            const reason = document.getElementById('returnReasonSelect')?.value || "General Return";
+            const comment = (document.getElementById('returnCommentText')?.value || "").trim();
+            const fullReason = comment ? `${reason} (${comment})` : reason;
+
+            try {
+                const res = await fetch(`/api/orders/${activeReturnOrderNum}/return`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: fullReason })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Return request failed.");
+
+                bootstrap.Modal.getInstance(document.getElementById("returnRequestModal"))?.hide();
+                alert(`✅ Return Pickup Scheduled!\n\nPickup Partner: ${data.delivery_agent_name || 'Rajesh Kumar'} (${data.logistics_firm || 'ATS'})\nDoorstep Inspection OTP: ${data.return_otp}\n\nOur associate will inspect the item at your door and approve instant wallet refund on their phone!`);
+                await openOrdersModal();
+            } catch (err) {
+                alert(`❌ ${err.message}`);
+            }
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Seller Quality & Manufacturing Verification Command Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --admin-dark: #0f172a;
+            --admin-header: #1e293b;
+            --amazon-orange: #ff9900;
+            --deal-red: #cc0c39;
+            --verified-green: #059669;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1e293b;
+        }
+
+        .admin-navbar {
+            background-color: var(--admin-dark);
+            padding: 12px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .admin-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        .stat-lbl {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-custom {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .table-custom th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .table-custom td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        .badge-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        .badge-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .check-card {
+            border-radius: 8px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="admin-navbar text-white">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/store" class="admin-logo text-white">
+                    <i class="bi bi-shield-check text-warning fs-3"></i>
+                    <div>
+                        <div>amazon <span class="fw-normal text-warning">compliance</span></div>
+                        <div style="font-size: 0.7rem; color: #94a3b8; font-weight: normal; margin-top: -3px;">Seller Quality & Manufacturing Verification Command Center</div>
+                    </div>
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/store" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="bi bi-shop me-1"></i> Storefront
+                </a>
+                <a href="/seller" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    <i class="bi bi-box-seam me-1"></i> Seller Central
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid py-4 px-lg-5">
+
+        <!-- TITLE & SUBTITLE -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">
+                    <i class="bi bi-patch-check-fill text-success me-2"></i>Product Quality & Manufacturing Verification Queue
+                </h3>
+                <p class="text-secondary mb-0">Review manufacturer licenses, factory locations, BIS/ISO certifications, and promotional deals (k% off or ₹n cashback) before catalog publication.</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <button class="btn btn-primary btn-sm rounded-pill px-3 fw-bold" onclick="loadSubmissions()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh Queue
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-val text-warning" id="countPending">--</div>
+                            <div class="stat-lbl">Pending Quality Review</div>
+                        </div>
+                        <i class="bi bi-hourglass-split fs-1 text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-val text-success" id="countApproved">--</div>
+                            <div class="stat-lbl">Verified & Published</div>
+                        </div>
+                        <i class="bi bi-check-circle-fill fs-1 text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-val text-danger" id="countRejected">--</div>
+                            <div class="stat-lbl">Compliance Rejected</div>
+                        </div>
+                        <i class="bi bi-x-circle-fill fs-1 text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-val text-primary" id="countDeals">--</div>
+                            <div class="stat-lbl">Active Deals Running</div>
+                        </div>
+                        <i class="bi bi-fire fs-1 text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-sm active" id="btnFilterAll" onclick="setFilter('all')">All Submissions</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnFilterPending" onclick="setFilter('pending')">
+                    Pending Inspection <span class="badge bg-warning text-dark ms-1" id="badgePendingCount">0</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnFilterApproved" onclick="setFilter('approved')">Approved & Live</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnFilterRejected" onclick="setFilter('rejected')">Rejected</button>
+            </div>
+            <div style="width: 280px;">
+                <input type="text" class="form-control form-control-sm" id="searchTableInput" placeholder="Filter by product, seller, brand..." oninput="filterTableClientSide()">
+            </div>
+        </div>
+
+        <!-- SUBMISSIONS TABLE -->
+        <div class="table-custom">
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Submission / ID</th>
+                            <th>Product & Brand</th>
+                            <th>Business Company / Seller</th>
+                            <th>Manufacturing & Quality Standards</th>
+                            <th>Deal / Pricing Offer</th>
+                            <th>Verification Status</th>
+                            <th class="text-end">Audit Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-secondary">
+                                <div class="spinner-border text-primary mb-2" role="status"></div>
+                                <div>Loading verification queue...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- INSPECT & VERIFY MODAL -->
+    <div class="modal fade" id="auditModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check text-warning fs-4"></i>
+                        <h5 class="modal-title fw-bold" id="auditModalTitle">Amazon Seller Quality & Manufacturing Dossier</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="auditModalBody">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer bg-light d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <div class="d-flex gap-2" id="auditActionButtons">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allSubmissions = [];
+        let currentFilter = 'all';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSubmissions();
+        });
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            ['All', 'Pending', 'Approved', 'Rejected'].forEach(f => {
+                const btn = document.getElementById(`btnFilter${f}`);
+                if (btn) btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`btnFilter${filter.charAt(0).toUpperCase() + filter.slice(1)}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderTable();
+        }
+
+        async function loadSubmissions() {
+            try {
+                const res = await fetch("/api/admin/submissions");
+                const data = await res.json();
+                allSubmissions = data.submissions || [];
+                updateStats();
+                renderTable();
+            } catch (err) {
+                console.error("Failed to load submissions:", err);
+                document.getElementById("submissionsTableBody").innerHTML = `
+                    <tr><td colspan="7" class="text-center text-danger py-4">Failed to fetch submissions.</td></tr>
+                `;
+            }
+        }
+
+        function updateStats() {
+            const pending = allSubmissions.filter(s => s.verification_status === 'pending').length;
+            const approved = allSubmissions.filter(s => s.verification_status === 'approved').length;
+            const rejected = allSubmissions.filter(s => s.verification_status === 'rejected').length;
+            const deals = allSubmissions.filter(s => s.is_deal_active && s.deal_type !== 'none').length;
+
+            document.getElementById("countPending").textContent = pending;
+            document.getElementById("countApproved").textContent = approved;
+            document.getElementById("countRejected").textContent = rejected;
+            document.getElementById("countDeals").textContent = deals;
+            document.getElementById("badgePendingCount").textContent = pending;
+        }
+
+        function filterTableClientSide() {
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("submissionsTableBody");
+            const searchKeyword = document.getElementById("searchTableInput").value.trim().toLowerCase();
+
+            let filtered = allSubmissions;
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(s => s.verification_status === currentFilter);
+            }
+
+            if (searchKeyword) {
+                filtered = filtered.filter(s => 
+                    (s.title || '').toLowerCase().includes(searchKeyword) ||
+                    (s.business_name || '').toLowerCase().includes(searchKeyword) ||
+                    (s.brand || '').toLowerCase().includes(searchKeyword) ||
+                    (s.submission_id || '').toLowerCase().includes(searchKeyword)
+                );
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-secondary">
+                            <i class="bi bi-inbox fs-2 d-block text-muted mb-2"></i>
+                            No submissions found matching this view.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                let statusBadge = '';
+                if (s.verification_status === 'approved') {
+                    statusBadge = `<span class="badge-approved"><i class="bi bi-check-circle-fill me-1"></i>Approved & Live</span>`;
+                } else if (s.verification_status === 'rejected') {
+                    statusBadge = `<span class="badge-rejected"><i class="bi bi-x-circle-fill me-1"></i>Rejected</span>`;
+                } else {
+                    statusBadge = `<span class="badge-pending"><i class="bi bi-hourglass-split me-1"></i>Pending Inspection</span>`;
+                }
+
+                let dealDisplay = '';
+                if (s.deal_type !== 'none') {
+                    if (s.discount_type === 'percentage') {
+                        dealDisplay = `
+                            <span class="badge bg-danger">⚡ ${s.discount_percentage}% OFF Deal</span>
+                            <div class="small fw-bold text-danger mt-1">₹${s.deal_price_inr.toLocaleString('en-IN')} <span class="text-muted text-decoration-line-through fw-normal">₹${s.original_price_inr.toLocaleString('en-IN')}</span></div>
+                        `;
+                    } else {
+                        dealDisplay = `
+                            <span class="badge bg-success">₹${s.cashback_inr.toLocaleString('en-IN')} Cashback Deal</span>
+                            <div class="small fw-bold text-success mt-1">₹${s.deal_price_inr.toLocaleString('en-IN')} + Instant Wallet Credit</div>
+                        `;
+                    }
+                } else {
+                    dealDisplay = `<span class="badge bg-secondary">Standard: ₹${s.deal_price_inr.toLocaleString('en-IN')}</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <strong class="d-block text-dark">${s.submission_id}</strong>
+                            <small class="text-muted">${new Date(s.created_at).toLocaleDateString()}</small>
+                            ${s.published_asin ? `<span class="badge bg-primary d-block mt-1">ASIN: ${s.published_asin}</span>` : ''}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="${s.image_url || 'https://placehold.co/50x50'}" class="rounded border" style="width: 48px; height: 48px; object-fit: cover;">
+                                <div>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 240px;" title="${s.title}">${s.title}</div>
+                                    <small class="text-secondary">Brand: <strong>${s.brand}</strong> • ${s.category}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong class="text-dark d-block">${s.business_name}</strong>
+                            <small class="text-muted"><i class="bi bi-person me-1"></i>${s.seller_name}</small><br>
+                            <small class="text-secondary"><i class="bi bi-geo-alt me-1"></i>${s.origin_country} (GSTIN: ${s.business_registration_no || '--'})</small>
+                        </td>
+                        <td>
+                            <div class="small">
+                                <span class="badge bg-success mb-1">${s.quality_certifications}</span><br>
+                                <strong class="text-secondary">Mfg:</strong> ${s.manufacturer_name}<br>
+                                <strong class="text-secondary">Lic:</strong> ${s.manufacturing_license_no}
+                            </div>
+                        </td>
+                        <td>
+                            ${dealDisplay}
+                        </td>
+                        <td>
+                            ${statusBadge}
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-dark rounded-pill px-3 fw-bold" onclick="openAuditDossier('${s.submission_id}')">
+                                <i class="bi bi-clipboard-check me-1"></i> Inspect & Verify
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function openAuditDossier(sid) {
+            try {
+                const res = await fetch(`/api/admin/submissions/${sid}`);
+                const s = await res.json();
+                if (!res.ok) {
+                    alert(s.detail || "Error loading submission dossier.");
+                    return;
+                }
+
+                document.getElementById("auditModalTitle").textContent = `Amazon Seller Verification Dossier: ${s.submission_id}`;
+                
+                const isApproved = s.verification_status === 'approved';
+                const isRejected = s.verification_status === 'rejected';
+
+                document.getElementById("auditModalBody").innerHTML = `
+                    <div class="row g-4">
+
+                        <!-- TOP HEADER SUMMARY -->
+                        <div class="col-12">
+                            <div class="p-3 rounded border bg-light d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="${s.image_url || 'https://placehold.co/80x80'}" class="rounded border shadow-sm" style="width: 70px; height: 70px; object-fit: cover;">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">${s.title}</h5>
+                                        <span class="badge bg-dark">${s.submission_id}</span>
+                                        <span class="badge bg-secondary ms-1">Brand: ${s.brand}</span>
+                                        <span class="badge bg-info text-dark ms-1">Category: ${s.category}</span>
+                                        ${s.published_asin ? `<span class="badge bg-success ms-1">ASIN: ${s.published_asin}</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fs-5 fw-bold text-danger">Deal Price: ₹${s.deal_price_inr.toLocaleString('en-IN')}</span>
+                                    <div class="text-muted small">Original M.R.P.: ₹${s.original_price_inr.toLocaleString('en-IN')}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4 COMPLIANCE CHECKLIST CARDS -->
+                        <!-- 1. BUSINESS LEGITIMACY -->
+                        <div class="col-md-6">
+                            <div class="check-card border-primary">
+                                <h6 class="fw-bold text-primary mb-2">
+                                    <i class="bi bi-building-check me-1"></i> 1. Business & Company Legitimacy Audit
+                                </h6>
+                                <table class="table table-sm table-borderless small mb-0">
+                                    <tr><td class="text-secondary" style="width: 140px;">Company Name:</td><td><strong>${s.business_name}</strong></td></tr>
+                                    <tr><td class="text-secondary">Representative:</td><td>${s.seller_name}</td></tr>
+                                    <tr><td class="text-secondary">Business Email:</td><td>${s.seller_email}</td></tr>
+                                    <tr><td class="text-secondary">Phone:</td><td>${s.seller_phone || '--'}</td></tr>
+                                    <tr><td class="text-secondary">GSTIN / CIN:</td><td><code>${s.business_registration_no || '--'}</code></td></tr>
+                                    <tr><td class="text-secondary">Origin Country:</td><td>${s.origin_country}</td></tr>
+                                    <tr><td class="text-secondary">Registered Address:</td><td>${s.business_address || '--'}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. MANUFACTURING & QUALITY STANDARDS -->
+                        <div class="col-md-6">
+                            <div class="check-card border-success">
+                                <h6 class="fw-bold text-success mb-2">
+                                    <i class="bi bi-shield-check me-1"></i> 2. Manufacturing & Quality Standards Inspection
+                                </h6>
+                                <table class="table table-sm table-borderless small mb-0">
+                                    <tr><td class="text-secondary" style="width: 140px;">Manufacturer:</td><td><strong>${s.manufacturer_name}</strong></td></tr>
+                                    <tr><td class="text-secondary">Factory License:</td><td><code>${s.manufacturing_license_no}</code></td></tr>
+                                    <tr><td class="text-secondary">Plant Address:</td><td>${s.factory_address}</td></tr>
+                                    <tr><td class="text-secondary">Quality Standards:</td><td><span class="badge bg-success">${s.quality_certifications}</span></td></tr>
+                                    <tr><td class="text-secondary">Warranty:</td><td>${s.warranty_terms}</td></tr>
+                                    <tr><td class="text-secondary">Safety Declaration:</td><td>${s.quality_inspection_notes || '--'}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. HARDWARE SPECIFICATIONS -->
+                        <div class="col-md-6">
+                            <div class="check-card">
+                                <h6 class="fw-bold text-dark mb-2">
+                                    <i class="bi bi-cpu me-1"></i> 3. Technical Hardware Specifications
+                                </h6>
+                                <table class="table table-sm table-borderless small mb-0">
+                                    <tr><td class="text-secondary" style="width: 140px;">Processor / CPU:</td><td>${s.cpu || '--'}</td></tr>
+                                    <tr><td class="text-secondary">RAM:</td><td>${s.ram_gb ? s.ram_gb + ' GB' : '--'}</td></tr>
+                                    <tr><td class="text-secondary">Storage:</td><td>${s.storage_gb ? s.storage_gb + ' GB SSD' : '--'}</td></tr>
+                                    <tr><td class="text-secondary">Graphics:</td><td>${s.gpu || '--'}</td></tr>
+                                    <tr><td class="text-secondary">Screen Size:</td><td>${s.screen_size_inches ? s.screen_size_inches + '"' : '--'}</td></tr>
+                                    <tr><td class="text-secondary">Stock Inventory:</td><td>${s.stock_quantity} units</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. DEAL & PROMOTION PRICING AUDIT -->
+                        <div class="col-md-6">
+                            <div class="check-card border-danger">
+                                <h6 class="fw-bold text-danger mb-2">
+                                    <i class="bi bi-tag-fill me-1"></i> 4. Promotional Deal & Fair Pricing Audit
+                                </h6>
+                                <table class="table table-sm table-borderless small mb-0">
+                                    <tr><td class="text-secondary" style="width: 140px;">Deal Type:</td><td><span class="badge bg-danger">${s.deal_type.toUpperCase()}</span></td></tr>
+                                    <tr><td class="text-secondary">Original M.R.P.:</td><td>₹${s.original_price_inr.toLocaleString('en-IN')}</td></tr>
+                                    <tr><td class="text-secondary">Deal Selling Price:</td><td><strong>₹${s.deal_price_inr.toLocaleString('en-IN')}</strong></td></tr>
+                                    <tr><td class="text-secondary">Discount Option:</td><td>
+                                        ${s.discount_type === 'percentage' ? 
+                                            `<span class="badge bg-danger">Direct ${s.discount_percentage}% OFF</span>` : 
+                                            `<span class="badge bg-success">₹${s.cashback_inr.toLocaleString('en-IN')} Instant Wallet Cashback</span>`}
+                                    </td></tr>
+                                    <tr><td class="text-secondary">Promotional Headline:</td><td>${s.deal_headline || '--'}</td></tr>
+                                    <tr><td class="text-secondary">Deal Duration:</td><td>${s.deal_duration_hours} Hours</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- DECISION & REMARKS PANEL -->
+                        <div class="col-12">
+                            <div class="p-3 border rounded bg-white">
+                                <h6 class="fw-bold mb-2"><i class="bi bi-pen me-1"></i> Compliance Officer Audit Remarks</h6>
+                                <div class="row g-2">
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-bold text-secondary">Reviewing Officer</label>
+                                        <input type="text" class="form-control form-control-sm" id="auditOfficerName" value="Amazon Quality & Compliance Inspection Directorate">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="form-label small fw-bold text-secondary">Audit Remarks / Justification</label>
+                                        <input type="text" class="form-control form-control-sm" id="auditRemarks" value="${s.admin_notes || 'All factory certifications and BIS safety registrations verified. Approved for store catalog.'}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+
+                // ACTIONS BUTTONS
+                const actionBtns = document.getElementById("auditActionButtons");
+                actionBtns.innerHTML = `
+                    <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="executeAuditDecision('${s.submission_id}', 'reject')">
+                        <i class="bi bi-x-circle me-1"></i> Reject Submission
+                    </button>
+                    <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold" onclick="executeAuditDecision('${s.submission_id}', 'approve')">
+                        <i class="bi bi-check-circle me-1"></i> Approve & Publish to Store Catalog
+                    </button>
+                `;
+
+                const modal = new bootstrap.Modal(document.getElementById('auditModal'));
+                modal.show();
+
+            } catch (err) {
+                console.error(err);
+                alert("Error displaying audit modal.");
+            }
+        }
+
+        async function executeAuditDecision(sid, action) {
+            const officer = document.getElementById("auditOfficerName").value.trim();
+            const remarks = document.getElementById("auditRemarks").value.trim();
+
+            if (action === 'reject' && !remarks) {
+                alert("Please provide a compliance rejection reason in the remarks field.");
+                return;
+            }
+
+            const confirmMsg = action === 'approve' ?
+                "Confirm Approval: This will verify the product's quality standard, generate an official catalog ASIN, activate the promotional deal, and publish the item to the live store. Continue?" :
+                "Confirm Rejection: This will reject the submission and notify the seller with your compliance feedback. Continue?";
+
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const endpoint = `/api/admin/submissions/${sid}/${action}`;
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        verified_by: officer,
+                        admin_notes: remarks
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert("Error: " + (data.detail || "Failed to process decision."));
+                    return;
+                }
+
+                alert(`Decision Executed Successfully!\nStatus: ${data.verification_status.toUpperCase()}` + (data.published_asin ? `\nPublished ASIN: ${data.published_asin}` : ''));
+                
+                // Hide modal & reload
+                const modalEl = document.getElementById('auditModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                loadSubmissions();
+
+            } catch (err) {
+                console.error(err);
+                alert("Network error processing decision.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -89,7 +89,16 @@ class ProductFilterService:
         if required == "gpu":
             return bool(extracted) or " gpu " in f" {product_text} "
 
-        return required in extracted or required in product_text
+        required_compact = required.replace(" ", "")
+        extracted_compact = extracted.replace(" ", "")
+        product_compact = product_text.replace(" ", "")
+
+        return (
+            required in extracted
+            or required in product_text
+            or (bool(required_compact) and required_compact in extracted_compact)
+            or (bool(required_compact) and required_compact in product_compact)
+        )
 
     def __init__(self):
         self.fx_service = FXService()

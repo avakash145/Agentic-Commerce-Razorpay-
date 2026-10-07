@@ -324,6 +324,16 @@
                 <i class="bi bi-wallet2"></i> ₹<span id="headerWallet">5,000.00</span>
             </a>
 
+            <!-- Delivery Partner -->
+            <a href="/delivery" class="nav-chip text-warning fw-semibold" target="_blank" title="Delivery Partner Portal">
+                <i class="bi bi-truck me-1"></i> Delivery Partner
+            </a>
+
+            <!-- 24x7 Helpline -->
+            <a href="javascript:void(0)" onclick="openHelplineModal()" class="nav-chip text-warning fw-bold" title="24x7 Helpline">
+                <i class="bi bi-headset me-1"></i> Helpline 9909665466
+            </a>
+
             <!-- Orders & Tracking -->
             <a href="javascript:void(0)" class="nav-chip" onclick="openOrdersModal()">
                 <i class="bi bi-box-seam me-1"></i> Returns & Orders
@@ -340,6 +350,8 @@
                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="openWalletModal()"><i class="bi bi-wallet2 me-2"></i>Amazon Wallet</a></li>
                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="openRewardsModal()"><i class="bi bi-gem me-2 text-info"></i>Diamond Rewards</a></li>
                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="openProfileModal()"><i class="bi bi-geo-alt me-2"></i>Delivery Address</a></li>
+                    <li><a class="dropdown-item text-warning fw-bold" href="/delivery" target="_blank"><i class="bi bi-truck me-2"></i>Delivery Partner (Doorstep Returns)</a></li>
+                    <li><a class="dropdown-item text-primary fw-bold" href="javascript:void(0)" onclick="openHelplineModal()"><i class="bi bi-headset me-2"></i>24x7 Helpline (9909665466)</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="openLoginModal()"><i class="bi bi-box-arrow-right me-2"></i>Sign In / Switch Account</a></li>
                 </ul>
@@ -469,8 +481,13 @@
                     </div>
 
                     <!-- Diamonds Earn Message -->
-                    <div class="p-2 mb-3 bg-light rounded text-center small border">
+                    <div class="p-2 mb-2 bg-light rounded text-center small border">
                         <i class="bi bi-stars text-warning me-1"></i>You will earn <strong class="text-primary" id="earnDiamondsCount">+0</strong> Diamonds on this order!
+                    </div>
+
+                    <!-- Deal Cashback Message -->
+                    <div id="cashbackNoticeBox" class="p-2 mb-3 bg-success-subtle text-success rounded text-center small border border-success" style="display: none;">
+                        <i class="bi bi-wallet2 text-success me-1"></i><strong>Limited Time Deal:</strong> <span id="cashbackNoticeText">₹0</span> Cashback will be credited to your Amazon Wallet!
                     </div>
 
                     <!-- Status Notification Box -->
@@ -755,6 +772,107 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: 24x7 HELPLINE & PHONE CALL TUNE (9909665466) -->
+    <div class="modal fade" id="helplineModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-headset text-warning me-2"></i>Amazon Priority Helpline 24x7
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3">
+                        <div class="rounded-circle bg-warning-subtle d-inline-flex p-3 text-warning border border-warning shadow-sm">
+                            <i class="bi bi-telephone-inbound-fill fs-1 text-dark"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">Customer Care Support Line</h5>
+                    <p class="text-secondary small mb-3">
+                        Connect directly with our dedicated Amazon Customer Resolution Specialists for doorstep return assistance, order tracking, and refund escalations.
+                    </p>
+
+                    <div class="p-3 bg-light border rounded mb-3">
+                        <div class="text-muted small mb-1">Direct Dial Contact Number:</div>
+                        <div class="fs-3 fw-bold text-dark font-monospace">+91 99096 65466</div>
+                        <div class="badge bg-success mt-1"><i class="bi bi-check-circle me-1"></i>Toll-Free & 24/7 Online</div>
+                    </div>
+
+                    <!-- Call Tune Indicator / Audio Wave Pulse -->
+                    <div id="callTuneStatus" class="alert alert-warning py-2 small mb-3 d-none">
+                        <span class="spinner-grow spinner-grow-sm me-2 text-warning"></span>
+                        <span id="callTuneStatusText">Playing Amazon Helper Ring Tune & Connecting...</span>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="tel:9909665466" onclick="playAmazonHelperCallTune()" class="btn btn-warning fw-bold py-2 text-dark shadow-sm fs-6">
+                            <i class="bi bi-telephone-fill me-2"></i>Call Helpline Now (9909665466)
+                        </a>
+                        <button type="button" class="btn btn-outline-dark btn-sm py-2" onclick="testCallTunePreview()">
+                            <i class="bi bi-music-note-beamed me-1"></i>Play Amazon Helper Call Tune 🎵
+                        </button>
+                    </div>
+
+                    <div class="border-top pt-3 text-start small">
+                        <div class="fw-bold text-secondary mb-2">Instant Policy Assistance:</div>
+                        <ul class="list-unstyled mb-0 text-muted">
+                            <li class="mb-1"><i class="bi bi-arrow-return-left text-primary me-2"></i><strong>10-Day Returns:</strong> Free doorstep inspection & pickup.</li>
+                            <li class="mb-1"><i class="bi bi-wallet2 text-success me-2"></i><strong>Instant Refunds:</strong> Credited to wallet right at your doorstep.</li>
+                            <li class="mb-1"><i class="bi bi-truck text-warning me-2"></i><strong>Logistics Tracking:</strong> Direct rider phone & OTP verification.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: REQUEST DOORSTEP RETURN (<10 DAYS) -->
+    <div class="modal fade" id="returnRequestModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h6 class="modal-title fw-bold">
+                        <i class="bi bi-arrow-counterclockwise text-warning me-2"></i>Request Doorstep Return (&lt;10 Days)
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="alert alert-warning py-2 small mb-3">
+                        <i class="bi bi-clock-history me-1"></i> Amazon 10-Day Return Policy: Free pickup at your doorstep with instant wallet refund on delivery associate approval.
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small text-muted mb-0">Order Number:</label>
+                        <div class="fw-bold text-primary" id="returnModalOrderNum">OD-SAMPLE</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Reason for Return:</label>
+                        <select id="returnReasonSelect" class="form-select form-select-sm">
+                            <option value="Defective hardware / Performance issue">Defective hardware / Performance issue</option>
+                            <option value="Display flickering / Screen defect">Display flickering / Screen defect</option>
+                            <option value="Not as described / Specification mismatch">Not as described / Specification mismatch</option>
+                            <option value="Packaging damaged on arrival">Packaging damaged on arrival</option>
+                            <option value="Changed mind / Accidental purchase">Changed mind / Accidental purchase</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Additional Comments / Condition Details:</label>
+                        <textarea id="returnCommentText" class="form-control form-control-sm" rows="2" placeholder="Original box and charger are preserved and ready for pickup associate."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="submitReturnRequest()">
+                        <i class="bi bi-truck me-1"></i>Schedule Doorstep Pickup
+                    </button>
                 </div>
             </div>
         </div>
@@ -1205,6 +1323,25 @@
             // Diamonds to earn: 10%
             const diamondsEarned = Math.floor(finalPayable * 0.1);
             document.getElementById("earnDiamondsCount").textContent = `+${diamondsEarned.toLocaleString()}`;
+
+            // Deal Cashback notice
+            const urlParams = new URLSearchParams(window.location.search);
+            let totalCashback = parseFloat(urlParams.get("cashback_inr") || 0);
+            if (currentCart.items) {
+                currentCart.items.forEach(it => {
+                    if (it.cashback_inr) totalCashback += (parseFloat(it.cashback_inr) * (it.quantity || 1));
+                });
+            }
+            const cbBox = document.getElementById("cashbackNoticeBox");
+            const cbText = document.getElementById("cashbackNoticeText");
+            if (cbBox && cbText) {
+                if (totalCashback > 0) {
+                    cbBox.style.display = "block";
+                    cbText.textContent = `₹${totalCashback.toLocaleString('en-IN')}`;
+                } else {
+                    cbBox.style.display = "none";
+                }
+            }
         }
 
         // ----------------------------------------------------
@@ -1457,13 +1594,51 @@
                                     <div class="text-muted small">Placed on ${order.created_at_fmt} · Paid via ${order.payment_method.toUpperCase()}</div>
                                 </div>
                                 <div class="text-end">
-                                    <div class="fw-bold text-danger fs-5">₹${order.total_inr.toLocaleString('en-IN')}</div>
+                                    <div class="fw-bold text-danger fs-5">₹${Number(order.total_inr).toLocaleString('en-IN')}</div>
                                     <div class="text-primary small">💎 Earned ${order.diamonds_earned} Diamonds</div>
                                 </div>
                             </div>
 
+                            <!-- COURIER LOGISTICS FIRM & DELIVERY ASSOCIATE INFO -->
+                            <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded my-2 small flex-wrap gap-2 border">
+                                <div>
+                                    <i class="bi bi-truck text-primary me-1"></i><strong>Courier Partner:</strong> ${order.logistics_firm || 'Amazon Transportation Services (ATS)'}
+                                    ${order.delivery_agent_name ? ` · <strong>Associate:</strong> ${order.delivery_agent_name} (${order.delivery_agent_badge || 'ATS-8821'}, <a href="tel:${order.delivery_agent_phone || '9909665466'}" class="text-decoration-none fw-bold">${order.delivery_agent_phone || '+91 98765 12044'}</a>)` : ''}
+                                </div>
+                                <div>
+                                    <span class="text-muted">Delivery OTP:</span>
+                                    <span class="badge bg-warning text-dark font-monospace fw-bold">${order.delivery_otp || '4821'}</span>
+                                </div>
+                            </div>
+
+                            <!-- DOORSTEP RETURN STATUS ALERTS -->
+                            ${order.return_status === 'approved' || order.status === 'returned' ? `
+                                <div class="alert alert-success py-2 my-2 small border-success">
+                                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                                    <strong>Doorstep Return Approved & Refunded:</strong> Item inspected at your doorstep by Delivery Associate ${order.delivery_agent_name || ''}. Full refund of <strong>₹${Number(order.total_inr).toLocaleString('en-IN')}</strong> was instantly credited to your Amazon Wallet.
+                                </div>
+                            ` : ''}
+
+                            ${order.return_status === 'pickup_assigned' ? `
+                                <div class="alert alert-warning py-2 my-2 small border-warning">
+                                    <i class="bi bi-truck-flatbed text-warning me-1"></i>
+                                    <strong>Doorstep Return Pickup Scheduled (&lt;10d Policy):</strong> Delivery associate ${order.delivery_agent_name || 'Rajesh Kumar'} (${order.logistics_firm || 'ATS'}) will inspect item condition at your residence.
+                                    <div class="mt-1">
+                                        <strong>Doorstep Inspection OTP:</strong> <span class="badge bg-dark text-warning font-monospace fs-6">${order.return_otp || '7294'}</span>
+                                        <span class="text-muted ms-2">(Provide to associate on arrival. Refund credited to wallet upon approval.)</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            ${order.return_status === 'rejected' ? `
+                                <div class="alert alert-danger py-2 my-2 small border-danger">
+                                    <i class="bi bi-ban text-danger me-1"></i>
+                                    <strong>Doorstep Return Rejected:</strong> Physical inspection criteria failed (${order.return_notes || 'Damage or serial mismatch'}).
+                                </div>
+                            ` : ''}
+
                             <!-- STEP TRACKER -->
-                            ${!isCancelled ? `
+                            ${!isCancelled && order.status !== 'returned' ? `
                                 <div class="tracking-timeline">
                                     <div class="timeline-step ${step1 ? 'active' : ''}">
                                         <div class="step-circle"><i class="bi bi-receipt"></i></div>
@@ -1482,11 +1657,11 @@
                                         <div class="step-label">Delivered</div>
                                     </div>
                                 </div>
-                            ` : `
+                            ` : (isCancelled ? `
                                 <div class="alert alert-danger py-2 my-2 small">
                                     <i class="bi bi-x-circle me-1"></i>This order has been cancelled and refunded to your Amazon Wallet.
                                 </div>
-                            `}
+                            ` : '')}
 
                             <!-- ITEMS -->
                             <div class="mt-2">${itemsHtml}</div>
@@ -1499,14 +1674,32 @@
                                 <div class="mt-2">${logsHtml}</div>
                             </details>
 
-                            <!-- CANCEL BUTTON -->
-                            ${!isCancelled ? `
-                                <div class="text-end mt-2 pt-2 border-top">
-                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('${order.order_number}')">
-                                        <i class="bi bi-x-circle me-1"></i>Cancel Order (Instant Wallet Refund)
-                                    </button>
+                            <!-- ACTIONS: RETURN (<10 DAYS) & CANCEL -->
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top flex-wrap gap-2">
+                                <div>
+                                    ${order.is_return_eligible ? `
+                                        <span class="badge bg-success-subtle text-success border border-success">
+                                            <i class="bi bi-arrow-return-left me-1"></i>Eligible for Return (${order.return_window_days_left}d left of 10-day window)
+                                        </span>
+                                    ` : (order.status !== 'returned' && !isCancelled && order.return_status === 'none' ? `
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-lock me-1"></i>Return Window Closed (&gt;10 Days from order)
+                                        </span>
+                                    ` : '')}
                                 </div>
-                            ` : ''}
+                                <div class="d-flex gap-2">
+                                    ${order.is_return_eligible ? `
+                                        <button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="openReturnModal('${order.order_number}')">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Request Doorstep Return (&lt;10d)
+                                        </button>
+                                    ` : ''}
+                                    ${!isCancelled && order.status !== 'returned' && order.return_status !== 'approved' ? `
+                                        <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('${order.order_number}')">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel Order
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -1580,6 +1773,86 @@
             b.className = `alert alert-${type} py-2 small mb-3`;
             b.textContent = msg;
             b.style.display = "block";
+        }
+
+        // AMAZON HELPER CALL TUNE SYNTHESIZER (Web Audio API)
+        function playAmazonHelperCallTune() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                // Pleasant 4-tone ascending harmonic chime (C5, E5, G5, C6)
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.14);
+                    gain.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.14);
+                    gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + i * 0.14 + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.14 + 0.32);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + i * 0.14);
+                    osc.stop(ctx.currentTime + i * 0.14 + 0.34);
+                });
+            } catch (e) {
+                console.warn("Audio chime:", e);
+            }
+        }
+        window.triggerAmazonHelperCallTune = playAmazonHelperCallTune;
+
+        function testCallTunePreview() {
+            const statusEl = document.getElementById('callTuneStatus');
+            const textEl = document.getElementById('callTuneStatusText');
+            if (statusEl) statusEl.classList.remove('d-none');
+            if (textEl) textEl.textContent = "🎵 Playing Amazon Helper Ring Tune chime...";
+            playAmazonHelperCallTune();
+            setTimeout(() => {
+                if (statusEl) statusEl.classList.add('d-none');
+            }, 2500);
+        }
+
+        function openHelplineModal() {
+            playAmazonHelperCallTune();
+            new bootstrap.Modal(document.getElementById("helplineModal")).show();
+        }
+
+        // DOORSTEP RETURN MODAL (<10 DAYS CONSTRAINT)
+        let activeReturnOrderNum = null;
+        function openReturnModal(orderNumber) {
+            activeReturnOrderNum = orderNumber;
+            const orderEl = document.getElementById('returnModalOrderNum');
+            if (orderEl) orderEl.textContent = orderNumber;
+            const commentEl = document.getElementById('returnCommentText');
+            if (commentEl) commentEl.value = '';
+            new bootstrap.Modal(document.getElementById("returnRequestModal")).show();
+        }
+
+        async function submitReturnRequest() {
+            if (!activeReturnOrderNum) return;
+            const reason = document.getElementById('returnReasonSelect')?.value || "General Return";
+            const comment = (document.getElementById('returnCommentText')?.value || "").trim();
+            const fullReason = comment ? `${reason} (${comment})` : reason;
+
+            try {
+                const res = await fetch(`/api/orders/${activeReturnOrderNum}/return`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: fullReason })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Return request failed.");
+
+                bootstrap.Modal.getInstance(document.getElementById("returnRequestModal"))?.hide();
+                alert(`✅ Return Pickup Scheduled!\n\nPickup Partner: ${data.delivery_agent_name || 'Rajesh Kumar'} (${data.logistics_firm || 'ATS'})\nDoorstep Inspection OTP: ${data.return_otp}\n\nOur associate will inspect the item at your door and approve instant wallet refund on their phone!`);
+                await openOrdersModal();
+            } catch (err) {
+                alert(`❌ ${err.message}`);
+            }
         }
     </script>
 </body>

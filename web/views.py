@@ -55,6 +55,7 @@ from app.payments.currency import (
 from sqlalchemy import text
 from app.api.webhook import razorpay_webhook
 from app.commerce.user_commerce_service import get_user_commerce_service
+from app.commerce.seller_verification_service import get_seller_verification_service
 
 # PATHS
 
@@ -774,7 +775,9 @@ def product_detail(
         "product_overview": source.get("product_overview") or classification.get("product_overview", []),
         "rating_breakdown": source.get("stars_breakdown") or ratings.get("stars_breakdown") or {},
         "review_intelligence": review_intelligence,
-        "seller": seller,
+        "seller": seller or source.get("seller") or {},
+        "quality_verification": source.get("quality_verification") or {},
+        "deal": source.get("deal") or {},
         "offers": offer_rows or source.get("offers") or [],
         "variants": variants,
         "reviews": reviews,
@@ -1942,6 +1945,10 @@ def products_list(request):
         except ValueError:
             pass
 
+    deals_only = request.GET.get("deals_only", "").strip().lower() in ["true", "1", "yes"]
+    if deals_only:
+        conditions.append("(p.raw_data->'deal'->>'is_deal_active' = 'true')")
+
     where_sql = " AND ".join(conditions)
 
     if sort_by == "price_asc":
@@ -1956,6 +1963,7 @@ def products_list(request):
     query_sql = text(f"""
         SELECT p.product_id, p.asin, p.title, p.brand, p.price, p.currency, p.stars, p.reviews_count, p.in_stock, p.breadcrumbs,
                ROUND(CAST(CASE WHEN p.currency = 'INR' THEN p.price ELSE p.price * 96.3 END AS numeric), 2) AS price_inr,
+               p.list_price, p.raw_data,
                s.ram_gb, s.storage_gb, s.gpu, s.cpu, s.screen_size_inches,
                (
                    SELECT m.url
@@ -1999,6 +2007,21 @@ def products_list(request):
             "cpu": p_dict.get("cpu"),
             "screen_size_inches": p_dict.get("screen_size_inches"),
         }
+        raw = p_dict.pop("raw_data", None) or {}
+        if isinstance(raw, str):
+            try:
+                raw = json.loads(raw)
+            except Exception:
+                raw = {}
+        if isinstance(raw, dict):
+            if "deal" in raw:
+                p_dict["deal"] = raw["deal"]
+            if "seller" in raw:
+                p_dict["seller_info"] = raw["seller"]
+            if "quality_verification" in raw:
+                p_dict["quality_info"] = raw["quality_verification"]
+        if p_dict.get("list_price"):
+            p_dict["original_mrp_inr"] = float(p_dict["list_price"])
         products.append(p_dict)
 
     return JsonResponse({
@@ -2100,15 +2123,20 @@ def copilot_chat(request):
     user_persona = user_svc.get_user_persona(uid)
 
     copilot = get_langchain_copilot()
-    result = copilot.chat(
-        message=message,
-        catalog_products=catalog_products,
-        history=history,
-        selected_asins=selected_asins,
-        user_persona=user_persona,
-        user_id=uid,
-        user_commerce_service=user_svc,
-    )
+    try:
+        result = copilot.chat(
+            message=message,
+            catalog_products=catalog_products,
+            history=history,
+            selected_asins=selected_asins,
+            user_persona=user_persona,
+            user_id=uid,
+            user_commerce_service=user_svc,
+        )
+    except Exception as exc:
+        print(f"[COPILOT CHAT EXCEPTION] {exc}")
+        result = copilot._fallback_chat(message, catalog_products)
+        result["tool_used"] = "fallback_assistant"
     return JsonResponse(make_json_safe(result))
 
 
@@ -2581,3 +2609,330 @@ def buy_again_products(request):
     uid = _get_current_user_id(request)
     products = svc.get_buy_again_products(uid)
     return JsonResponse({"products": make_json_safe(products)})
+
+
+# ============================================================
+# SELLER PORTAL & ADMIN VERIFICATION VIEWS
+# ============================================================
+
+def seller_portal_page(request):
+    """Serve the Amazon Seller Central business product upload and deals portal."""
+    file_path = STATIC_DIR / "seller.html"
+    return FileResponse(open(file_path, "rb"), content_type="text/html")
+
+
+def admin_verification_page(request):
+    """Serve the Amazon Seller Quality & Compliance Inspection Command Center."""
+    file_path = STATIC_DIR / "admin_verification.html"
+    return FileResponse(open(file_path, "rb"), content_type="text/html")
+
+
+@csrf_exempt
+@require_POST
+def seller_submit_product(request):
+    """
+    Business Seller submits a new product with:
+    - Company / Seller credentials
+    - Product specs and media
+    - Product quality standards and factory manufacturing license
+    - Limited time deal or cashback offer configuration
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"detail": "Invalid JSON payload."}, status=400)
+
+    svc = get_seller_verification_service()
+    try:
+        submission = svc.submit_product(
+            business_name=data.get("business_name", ""),
+            seller_name=data.get("seller_name", ""),
+            seller_email=data.get("seller_email", ""),
+            seller_phone=data.get("seller_phone"),
+            business_registration_no=data.get("business_registration_no"),
+            business_address=data.get("business_address"),
+            origin_country=data.get("origin_country", "India"),
+            title=data.get("title", ""),
+            brand=data.get("brand", ""),
+            category=data.get("category", "Laptops"),
+            description=data.get("description", ""),
+            original_price_inr=float(data.get("original_price_inr") or 0.0),
+            selling_price_inr=float(data.get("selling_price_inr") or data.get("original_price_inr") or 0.0),
+            stock_quantity=int(data.get("stock_quantity") or 50),
+            image_url=data.get("image_url"),
+            cpu=data.get("cpu"),
+            ram_gb=float(data.get("ram_gb")) if data.get("ram_gb") else None,
+            storage_gb=float(data.get("storage_gb")) if data.get("storage_gb") else None,
+            gpu=data.get("gpu"),
+            screen_size_inches=float(data.get("screen_size_inches")) if data.get("screen_size_inches") else None,
+            manufacturer_name=data.get("manufacturer_name", ""),
+            factory_address=data.get("factory_address", ""),
+            manufacturing_license_no=data.get("manufacturing_license_no", ""),
+            quality_certifications=data.get("quality_certifications", ""),
+            quality_inspection_notes=data.get("quality_inspection_notes"),
+            warranty_terms=data.get("warranty_terms", "1 Year Comprehensive Manufacturer Warranty"),
+            deal_type=data.get("deal_type", "limited_time_deal"),
+            discount_type=data.get("discount_type", "percentage"),
+            discount_percentage=float(data.get("discount_percentage") or 0.0),
+            cashback_inr=float(data.get("cashback_inr") or 0.0),
+            deal_headline=data.get("deal_headline"),
+            deal_duration_hours=int(data.get("deal_duration_hours") or 48),
+        )
+        return JsonResponse(make_json_safe(submission), status=201)
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@require_GET
+def seller_list_products(request):
+    """List submissions for a specific business seller or demo listings."""
+    seller_email = request.GET.get("seller_email")
+    status = request.GET.get("status")
+    svc = get_seller_verification_service()
+    submissions = svc.list_submissions(seller_email=seller_email, status=status)
+    return JsonResponse({"submissions": make_json_safe(submissions)})
+
+
+@require_GET
+def seller_get_product(request, submission_id: str):
+    """Retrieve details of a specific seller submission."""
+    svc = get_seller_verification_service()
+    submission = svc.get_submission(submission_id)
+    if not submission:
+        return JsonResponse({"detail": "Submission not found."}, status=404)
+    return JsonResponse(make_json_safe(submission))
+
+
+@require_GET
+def admin_list_submissions(request):
+    """Admin endpoint to inspect all seller submissions across review states."""
+    status = request.GET.get("status")
+    svc = get_seller_verification_service()
+    submissions = svc.list_submissions(status=status)
+    return JsonResponse({"submissions": make_json_safe(submissions)})
+
+
+@require_GET
+def admin_get_submission(request, submission_id: str):
+    """Admin endpoint to inspect full compliance and quality dossier of a submission."""
+    svc = get_seller_verification_service()
+    sub = svc.get_submission(submission_id)
+    if not sub:
+        return JsonResponse({"detail": "Submission not found."}, status=404)
+    return JsonResponse(make_json_safe(sub))
+
+
+@csrf_exempt
+@require_POST
+def admin_approve_submission(request, submission_id: str):
+    """
+    Admin verifies quality standards, manufacturing compliance,
+    activates promotional deal (k% off or n cashback), and publishes to store catalog.
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    verified_by = data.get("verified_by") or "Amazon Quality & Compliance Inspection Directorate"
+    admin_notes = data.get("admin_notes") or "Manufacturing license and BIS/ISO safety standards verified. Approved for store catalog."
+
+    svc = get_seller_verification_service()
+    try:
+        approved = svc.approve_submission(submission_id, verified_by=verified_by, admin_notes=admin_notes)
+        return JsonResponse(make_json_safe(approved))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@csrf_exempt
+@require_POST
+def admin_reject_submission(request, submission_id: str):
+    """Admin rejects a submission with compliance feedback."""
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    verified_by = data.get("verified_by") or "Amazon Quality & Compliance Inspection Directorate"
+    admin_notes = data.get("admin_notes") or "Quality standards documentation did not meet mandatory certification requirements."
+
+    svc = get_seller_verification_service()
+    try:
+        rejected = svc.reject_submission(submission_id, verified_by=verified_by, admin_notes=admin_notes)
+        return JsonResponse(make_json_safe(rejected))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+# ============================================================
+# DELIVERY ASSOCIATE & COURIER LOGISTICS VIEWS
+# ============================================================
+
+def delivery_portal_page(request):
+    """Serve the mobile-friendly Amazon Delivery Associate & Courier Logistics Portal."""
+    file_path = STATIC_DIR / "delivery.html"
+    return FileResponse(open(file_path, "rb"), content_type="text/html")
+
+
+@require_GET
+def delivery_list_orders(request):
+    """List assigned outbound orders for delivery associates."""
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    status = request.GET.get("status")
+    svc = get_delivery_logistics_service()
+    orders = svc.list_delivery_orders(status=status)
+    return JsonResponse({"orders": make_json_safe(orders)})
+
+
+@csrf_exempt
+@require_POST
+def delivery_mark_delivered(request, order_number: str):
+    """Delivery boy marks package as Delivered at customer doorstep with OTP."""
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    agent_name = data.get("delivery_agent_name") or "Rajesh Kumar (ATS Associate #8821)"
+    entered_otp = data.get("entered_otp")
+
+    svc = get_delivery_logistics_service()
+    try:
+        order = svc.mark_outbound_delivered(order_number, delivery_agent_name=agent_name, entered_otp=entered_otp)
+        return JsonResponse(make_json_safe(order))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@require_GET
+def delivery_list_returns(request):
+    """List doorstep return pickups for delivery associates to inspect at customer house."""
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    return_status = request.GET.get("return_status")
+    svc = get_delivery_logistics_service()
+    returns = svc.list_return_pickups(return_status=return_status)
+    return JsonResponse({"returns": make_json_safe(returns)})
+
+
+@csrf_exempt
+@require_POST
+def delivery_approve_return(request, order_number: str):
+    """
+    Delivery boy physically inspects item at customer doorstep,
+    approves from mobile phone, and triggers INSTANT REFUND to customer Amazon Wallet!
+    """
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    agent_name = data.get("delivery_agent_name") or data.get("agent_name") or "Rajesh Kumar (ATS Associate #8821)"
+    notes = data.get("notes") or "Doorstep physical inspection passed. Original packaging and accessories verified."
+    entered_otp = data.get("entered_otp") or data.get("otp")
+
+    svc = get_delivery_logistics_service()
+    try:
+        order = svc.approve_doorstep_return(
+            order_number,
+            delivery_agent_name=agent_name,
+            notes=notes,
+            entered_otp=entered_otp,
+        )
+        return JsonResponse(make_json_safe(order))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@csrf_exempt
+@require_POST
+def delivery_reject_return(request, order_number: str):
+    """Delivery boy rejects return at doorstep due to customer damage or missing serial number."""
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    agent_name = data.get("delivery_agent_name") or "Rajesh Kumar (ATS Associate #8821)"
+    rejection_reason = data.get("rejection_reason") or "Physical damage or serial number mismatch identified during doorstep inspection."
+
+    svc = get_delivery_logistics_service()
+    try:
+        order = svc.reject_doorstep_return(order_number, delivery_agent_name=agent_name, rejection_reason=rejection_reason)
+        return JsonResponse(make_json_safe(order))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@require_GET
+def delivery_list_agents(request):
+    """List registered courier delivery firms and associates."""
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    svc = get_delivery_logistics_service()
+    return JsonResponse({
+        "agents": make_json_safe(svc.get_delivery_agents()),
+        "firms": make_json_safe(svc.get_logistics_firms()),
+    })
+
+
+@csrf_exempt
+@require_POST
+def order_request_return(request, order_number: str):
+    """
+    Customer requests an order return.
+    STRICT CONSTRAINT: Enforces return within 10 days of order placement!
+    """
+    from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        data = {}
+
+    uid = _get_current_user_id(request)
+    reason = data.get("reason") or "Defective / Performance issue"
+
+    svc = get_delivery_logistics_service()
+    try:
+        order = svc.request_return(user_id=uid, order_number=order_number, reason=reason)
+        return JsonResponse(make_json_safe(order))
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+
+
+@require_GET
+def support_info_api(request):
+    """Returns official helpline phone 9909665466, policy constraints, and FAQ."""
+    return JsonResponse({
+        "helpline_phone": "9909665466",
+        "helpline_formatted": "+91 99096 65466",
+        "service_name": "Amazon 24x7 Priority Customer Helpline",
+        "operating_hours": "24 Hours / 7 Days a Week",
+        "return_policy_window_days": 10,
+        "doorstep_inspection": True,
+        "instant_wallet_refund": True,
+        "faq": [
+            {
+                "question": "What is the return window policy for products?",
+                "answer": "All laptop and electronics orders can be returned within 10 days of order placement. Returns beyond 10 days are strictly closed under policy.",
+            },
+            {
+                "question": "How does Doorstep Pickup & Instant Refund work?",
+                "answer": "Our assigned delivery associate (ATS, Blue Dart, or Delhivery) visits your doorstep, verifies the product condition on their smartphone app, and on approval your refund is immediately credited to your Amazon Wallet.",
+            },
+            {
+                "question": "How do I contact customer support directly?",
+                "answer": "You can dial our official priority helpline directly at +91 9909665466 or type /help in the AI Shopping Copilot chat.",
+            },
+            {
+                "question": "How do I track my assigned delivery associate and courier?",
+                "answer": "Each order displays the assigned logistics firm (Amazon Transportation Services ATS, Blue Dart, or Delhivery), delivery agent name, badge ID, phone number, and secure delivery OTP in your Orders tab.",
+            },
+            {
+                "question": "How do Limited Time Deals & Cashback work?",
+                "answer": "Deals offer direct percentage discounts up to 25% off or instant wallet cashback credited immediately upon order completion.",
+            },
+        ],
+    })

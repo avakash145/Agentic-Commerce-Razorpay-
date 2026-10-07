@@ -34,6 +34,24 @@ from .views import (
     wallet_topup,
     rewards_claim_daily,
     buy_again_products,
+    seller_portal_page,
+    admin_verification_page,
+    seller_submit_product,
+    seller_list_products,
+    seller_get_product,
+    admin_list_submissions,
+    admin_get_submission,
+    admin_approve_submission,
+    admin_reject_submission,
+    delivery_portal_page,
+    delivery_list_orders,
+    delivery_mark_delivered,
+    delivery_list_returns,
+    delivery_approve_return,
+    delivery_reject_return,
+    delivery_list_agents,
+    order_request_return,
+    support_info_api,
 )
 from app.api.webhook import razorpay_webhook
 
@@ -157,6 +175,39 @@ urlpatterns = [
 
     # BUY AGAIN
     path("api/buy-again", buy_again_products, name="buy-again-products"),
+
+    # SELLER CENTRAL & ADMIN QUALITY VERIFICATION PORTALS
+    path("seller", seller_portal_page, name="seller-portal-page"),
+    path("business", seller_portal_page, name="business-portal-page"),
+    path("admin-seller", admin_verification_page, name="admin-verification-page"),
+    path("admin-verification", admin_verification_page, name="admin-verification-page-slug"),
+
+    # SELLER PRODUCT SUBMISSION & MANAGEMENT APIS
+    path("api/seller/products/submit", seller_submit_product, name="seller-submit-product"),
+    path("api/seller/products", seller_list_products, name="seller-list-products"),
+    path("api/seller/products/<str:submission_id>", seller_get_product, name="seller-get-product"),
+
+    # ADMIN VERIFICATION & APPROVAL APIS
+    path("api/admin/submissions", admin_list_submissions, name="admin-list-submissions"),
+    path("api/admin/submissions/<str:submission_id>", admin_get_submission, name="admin-get-submission"),
+    path("api/admin/submissions/<str:submission_id>/approve", admin_approve_submission, name="admin-approve-submission"),
+    path("api/admin/submissions/<str:submission_id>/reject", admin_reject_submission, name="admin-reject-submission"),
+
+    # DELIVERY ASSOCIATE & COURIER LOGISTICS PORTAL
+    path("delivery", delivery_portal_page, name="delivery-portal-page"),
+    path("logistics", delivery_portal_page, name="logistics-portal-page"),
+    path("api/delivery/orders", delivery_list_orders, name="delivery-list-orders"),
+    path("api/delivery/orders/<str:order_number>/deliver", delivery_mark_delivered, name="delivery-mark-delivered"),
+    path("api/delivery/returns", delivery_list_returns, name="delivery-list-returns"),
+    path("api/delivery/returns/<str:order_number>/approve", delivery_approve_return, name="delivery-approve-return"),
+    path("api/delivery/returns/<str:order_number>/reject", delivery_reject_return, name="delivery-reject-return"),
+    path("api/delivery/agents", delivery_list_agents, name="delivery-list-agents"),
+
+    # CUSTOMER ORDER RETURN (10-DAY POLICY CONSTRAINT)
+    path("api/orders/<str:order_number>/return", order_request_return, name="order-request-return"),
+
+    # 24x7 CUSTOMER HELPLINE & SUPPORT
+    path("api/support/info", support_info_api, name="support-info-api"),
 
     # WEBHOOKS
     path(

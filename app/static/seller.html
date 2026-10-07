@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Seller Central - Business Partner Portal & Deal Studio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --amazon-navy: #131921;
+            --amazon-dark: #232f3e;
+            --amazon-orange: #ff9900;
+            --amazon-orange-hover: #e68a00;
+            --amazon-deal-red: #cc0c39;
+            --amazon-green: #067d62;
+            --bg-gray: #f8f9fa;
+        }
+
+        body {
+            background-color: #f3f3f3;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #0f1111;
+        }
+
+        /* NAVBAR */
+        .seller-navbar {
+            background-color: var(--amazon-navy);
+            padding: 10px 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .brand-logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .brand-logo .badge-partner {
+            background-color: var(--amazon-orange);
+            color: #111;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* METRIC CARDS */
+        .metric-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.15s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            color: #565959;
+            font-weight: 600;
+        }
+
+        /* FORM CARDS */
+        .form-section-card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .form-section-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #eee;
+            background: #fafafa;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-section-body {
+            padding: 20px;
+        }
+
+        /* DEAL PREVIEW BOX */
+        .deal-preview-box {
+            background: #fff8f5;
+            border: 1.5px dashed var(--amazon-orange);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+        .deal-badge-preview {
+            background-color: var(--amazon-deal-red);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .cashback-badge-preview {
+            background-color: var(--amazon-green);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* STATUS BADGES */
+        .badge-status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .badge-status-approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .badge-status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .btn-amazon-primary {
+            background-color: #ffd814;
+            border: 1px solid #fcd200;
+            color: #0f1111;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 8px 24px;
+            box-shadow: 0 2px 5px rgba(213,217,217,.5);
+        }
+        .btn-amazon-primary:hover {
+            background-color: #f7ca00;
+            border-color: #f2c200;
+        }
+        .btn-amazon-secondary {
+            background-color: #fff;
+            border: 1px solid #d5d9d9;
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 8px 20px;
+        }
+        .btn-amazon-secondary:hover {
+            background-color: #f7fafa;
+        }
+
+        /* SUBMISSION ROW */
+        .submission-card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .product-thumb {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="seller-navbar text-white">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/store" class="brand-logo text-white">
+                    <i class="bi bi-box-seam-fill text-warning"></i>
+                    <span>amazon <span class="fw-normal">seller central</span></span>
+                    <span class="badge-partner">Business Studio</span>
+                </a>
+                <span class="text-white-50 small d-none d-md-inline">| Product Quality & Deal Management Portal</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/store" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="bi bi-shop me-1"></i> Storefront
+                </a>
+                <a href="/admin-seller" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+                    <i class="bi bi-shield-check me-1"></i> Admin Verification
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid py-4 px-lg-5">
+        
+        <!-- SELLER IDENTITY & METRICS BANNER -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-building-check text-primary me-2"></i>Business Seller & Deal Studio</h3>
+                <p class="text-secondary mb-0">Upload products, submit manufacturing quality certifications for Amazon Seller verification, and configure Limited Time Deals.</p>
+            </div>
+            <div class="mt-3 mt-md-0 d-flex gap-2">
+                <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold" onclick="autoFillDemoForm('percentage')">
+                    <i class="bi bi-magic me-1"></i> Fill Demo: 20% Discount Deal
+                </button>
+                <button class="btn btn-outline-success btn-sm rounded-pill fw-bold" onclick="autoFillDemoForm('cashback')">
+                    <i class="bi bi-cash-coin me-1"></i> Fill Demo: ₹3,000 Cashback Deal
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value text-dark" id="statTotalSubmissions">--</div>
+                            <div class="metric-label">Total Submissions</div>
+                        </div>
+                        <i class="bi bi-boxes fs-1 text-secondary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value text-warning" id="statPendingReview">--</div>
+                            <div class="metric-label">Under Quality Inspection</div>
+                        </div>
+                        <i class="bi bi-hourglass-split fs-1 text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value text-success" id="statApprovedLive">--</div>
+                            <div class="metric-label">Verified & Live in Store</div>
+                        </div>
+                        <i class="bi bi-check-circle-fill fs-1 text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value text-danger" id="statActiveDeals">--</div>
+                            <div class="metric-label">Active Limited Time Deals</div>
+                        </div>
+                        <i class="bi bi-fire fs-1 text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS NAV -->
+        <ul class="nav nav-pills mb-4" id="sellerTabNav" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold px-4 rounded-pill" id="upload-tab" data-bs-toggle="pill" data-bs-target="#tabUpload" type="button">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Product & Configure Deal
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold px-4 rounded-pill ms-2" id="tracking-tab" data-bs-toggle="pill" data-bs-target="#tabTracking" type="button" onclick="loadMySubmissions()">
+                    <i class="bi bi-card-checklist me-2"></i>My Submissions & Quality Status (<span id="tabCountSubmissions">0</span>)
+                </button>
+            </li>
+        </ul>
+
+        <!-- TABS CONTENT -->
+        <div class="tab-content" id="sellerTabContent">
+
+            <!-- TAB 1: UPLOAD PRODUCT & CONFIGURE DEAL -->
+            <div class="tab-pane fade show active" id="tabUpload">
+                <form id="productUploadForm" onsubmit="handleProductSubmit(event)">
+
+                    <div class="row">
+                        <!-- LEFT COLUMN: BUSINESS & PRODUCT INFO -->
+                        <div class="col-lg-6">
+
+                            <!-- CARD 1: BUSINESS & SELLER IDENTITY -->
+                            <div class="form-section-card">
+                                <div class="form-section-header">
+                                    <i class="bi bi-building text-primary"></i>
+                                    <span>1. Business Company & Seller Identification</span>
+                                </div>
+                                <div class="form-section-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-7">
+                                            <label class="form-label fw-bold small">Business / Company Name *</label>
+                                            <input type="text" class="form-control form-control-sm" id="businessName" placeholder="e.g. Apex Precision Technologies Pvt Ltd" required>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-bold small">Authorized Representative *</label>
+                                            <input type="text" class="form-control form-control-sm" id="sellerName" placeholder="e.g. Vikramaditya Sharma" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Business Email *</label>
+                                            <input type="email" class="form-control form-control-sm" id="sellerEmail" placeholder="seller@business.com" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Contact Phone</label>
+                                            <input type="text" class="form-control form-control-sm" id="sellerPhone" placeholder="+91 98200 12345">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Corporate Registration / GSTIN *</label>
+                                            <input type="text" class="form-control form-control-sm" id="businessRegNo" placeholder="29AABCA1234F1Z5">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Country of Origin</label>
+                                            <input type="text" class="form-control form-control-sm" id="originCountry" value="India">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Registered Business Address</label>
+                                            <input type="text" class="form-control form-control-sm" id="businessAddress" placeholder="Tower C, Tech Park 4, Electronics City, Bengaluru">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD 2: PRODUCT SPECIFICATIONS -->
+                            <div class="form-section-card">
+                                <div class="form-section-header">
+                                    <i class="bi bi-laptop text-primary"></i>
+                                    <span>2. Product Catalog & Hardware Specifications</span>
+                                </div>
+                                <div class="form-section-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label class="form-label fw-bold small">Product Title *</label>
+                                            <input type="text" class="form-control form-control-sm" id="productTitle" placeholder="Apex AeroBook 14 Ultra - Intel Core i7 13th Gen, 16GB RAM, 1TB SSD" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Brand Name *</label>
+                                            <input type="text" class="form-control form-control-sm" id="productBrand" placeholder="e.g. Apex" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Category</label>
+                                            <select class="form-select form-select-sm" id="productCategory">
+                                                <option value="Laptops" selected>Laptops & Ultrabooks</option>
+                                                <option value="Gaming Laptops">Gaming Laptops</option>
+                                                <option value="Workstations">Workstations</option>
+                                                <option value="Accessories">Accessories</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Original M.R.P. (₹) *</label>
+                                            <input type="number" step="0.01" class="form-control form-control-sm" id="origPriceINR" placeholder="75000" oninput="updateDealLivePreview()" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Regular Selling Price (₹)</label>
+                                            <input type="number" step="0.01" class="form-control form-control-sm" id="sellingPriceINR" placeholder="60000" oninput="updateDealLivePreview()">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Stock Quantity</label>
+                                            <input type="number" class="form-control form-control-sm" id="stockQty" value="50">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label fw-bold small">Product Image URL</label>
+                                            <input type="url" class="form-control form-control-sm" id="productImageUrl" placeholder="https://images.unsplash.com/photo-...">
+                                        </div>
+
+                                        <!-- SPECS -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">CPU / Processor</label>
+                                            <input type="text" class="form-control form-control-sm" id="specCPU" placeholder="Intel Core i7-13700H (14 Cores)">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small">RAM (GB)</label>
+                                            <input type="number" class="form-control form-control-sm" id="specRAM" placeholder="16">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small">SSD (GB)</label>
+                                            <input type="number" class="form-control form-control-sm" id="specStorage" placeholder="1024">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label fw-bold small">Graphics / GPU</label>
+                                            <input type="text" class="form-control form-control-sm" id="specGPU" placeholder="Intel Iris Xe / RTX 4060">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small">Display Size (inches)</label>
+                                            <input type="number" step="0.1" class="form-control form-control-sm" id="specScreen" placeholder="14.0">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Product Description & Key Highlights</label>
+                                            <textarea class="form-control form-control-sm" id="productDescription" rows="2" placeholder="Ultra-thin chassis laptop engineered for engineers and data scientists..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN: QUALITY VERIFICATION & DEAL CONFIG -->
+                        <div class="col-lg-6">
+
+                            <!-- CARD 3: MANUFACTURING & QUALITY VERIFICATION -->
+                            <div class="form-section-card border-success">
+                                <div class="form-section-header bg-success text-white">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span>3. Manufacturing & Product Quality Verification (Amazon Standard)</span>
+                                </div>
+                                <div class="form-section-body">
+                                    <div class="alert alert-success py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                                        <i class="bi bi-info-circle-fill fs-5"></i>
+                                        <span>Like Amazon Seller verification, our compliance team inspects your manufacturing plant license and BIS/ISO standards prior to catalog publication.</span>
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Manufacturer Company Name *</label>
+                                            <input type="text" class="form-control form-control-sm" id="manufacturerName" placeholder="Foxconn Precision Manufacturing India" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Manufacturing License / Batch No *</label>
+                                            <input type="text" class="form-control form-control-sm" id="mfgLicenseNo" placeholder="MFG-LIC-TN-2025-99412" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Manufacturing Plant / Factory Address *</label>
+                                            <input type="text" class="form-control form-control-sm" id="factoryAddress" placeholder="Plot 18, Sriperumbudur Industrial Corridor, Tamil Nadu 602105" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Quality Standards & Certifications *</label>
+                                            <input type="text" class="form-control form-control-sm" id="qualityCertifications" placeholder="BIS Certified (R-41029384), ISO 9001:2015, CE, RoHS Compliant" required>
+                                            <div class="form-text small">e.g. BIS Registration number, ISO 9001, RoHS, CE electrical safety.</div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Quality Safety Audit Declaration / Inspection Notes</label>
+                                            <textarea class="form-control form-control-sm" id="qualityInspectionNotes" rows="2" placeholder="Passed 100% automated stress testing, drop safety testing, and thermal dissipation benchmark."></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Warranty Terms & Coverage</label>
+                                            <input type="text" class="form-control form-control-sm" id="warrantyTerms" value="2 Years Comprehensive Onsite Manufacturer Warranty">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD 4: LIMITED TIME DEAL & PROMOTIONS -->
+                            <div class="form-section-card border-danger">
+                                <div class="form-section-header bg-danger text-white">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <span>4. Limited Time Deal & Promotional Pricing Studio</span>
+                                </div>
+                                <div class="form-section-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Deal Type</label>
+                                            <select class="form-select form-select-sm" id="dealType" onchange="updateDealLivePreview()">
+                                                <option value="limited_time_deal" selected>⚡ Limited Time Deal</option>
+                                                <option value="deal_of_the_day">🔥 Deal of the Day</option>
+                                                <option value="lightning_deal">⚡ Lightning Deal</option>
+                                                <option value="none">Standard Listing (No Deal)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small">Deal Duration (Hours)</label>
+                                            <select class="form-select form-select-sm" id="dealDurationHours">
+                                                <option value="24">24 Hours (1 Day)</option>
+                                                <option value="48" selected>48 Hours (2 Days)</option>
+                                                <option value="72">72 Hours (3 Days)</option>
+                                                <option value="168">7 Days (Weekly Special)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- DISCOUNT OFFER STRUCTURE (RADIO SELECTION) -->
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small text-danger">Select Promotional Discount Structure *</label>
+                                            <div class="border rounded p-3 bg-light">
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input" type="radio" name="discountOption" id="optPercentage" value="percentage" checked onchange="toggleDiscountFields()">
+                                                    <label class="form-check-label fw-bold" for="optPercentage">
+                                                        <i class="bi bi-percent text-danger me-1"></i> Option A: Direct Discount by <span class="badge bg-danger">k% Off</span>
+                                                    </label>
+                                                    <div class="mt-2" id="percentageInputs">
+                                                        <div class="input-group input-group-sm w-75">
+                                                            <span class="input-group-text fw-bold">Discount Percentage (k%)</span>
+                                                            <input type="number" step="0.5" class="form-control" id="discountPercentage" placeholder="20" value="20" oninput="updateDealLivePreview()">
+                                                            <span class="input-group-text">% OFF</span>
+                                                        </div>
+                                                        <div class="form-text small text-muted">Customer gets direct price deduction from original M.R.P.</div>
+                                                    </div>
+                                                </div>
+
+                                                <hr class="my-2">
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="discountOption" id="optCashback" value="cashback" onchange="toggleDiscountFields()">
+                                                    <label class="form-check-label fw-bold" for="optCashback">
+                                                        <i class="bi bi-cash-stack text-success me-1"></i> Option B: <span class="badge bg-success">n Rupees Cashback Offer</span>
+                                                    </label>
+                                                    <div class="mt-2 d-none" id="cashbackInputs">
+                                                        <div class="input-group input-group-sm w-75">
+                                                            <span class="input-group-text fw-bold">Cashback Amount (₹n)</span>
+                                                            <input type="number" step="100" class="form-control" id="cashbackINR" placeholder="3000" value="3000" oninput="updateDealLivePreview()">
+                                                            <span class="input-group-text">INR Cashback</span>
+                                                        </div>
+                                                        <div class="form-text small text-success">Customer receives ₹n instantly credited to their Amazon Wallet upon order confirmation!</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small">Deal Promotional Headline</label>
+                                            <input type="text" class="form-control form-control-sm" id="dealHeadline" placeholder="Limited Time Deal: 20% Flat Discount on Apex AeroBook!">
+                                        </div>
+
+                                        <!-- LIVE DEAL PREVIEW -->
+                                        <div class="col-12">
+                                            <div class="deal-preview-box">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="fw-bold small text-secondary">Live Deal Preview on Storefront:</span>
+                                                    <span id="previewDealTag" class="deal-badge-preview">⚡ Limited Time Deal</span>
+                                                </div>
+                                                <div class="d-flex align-items-baseline gap-2 mb-1">
+                                                    <span id="previewDiscountBadge" class="badge bg-danger fs-6">-20%</span>
+                                                    <span id="previewDealPrice" class="fs-4 fw-bold text-danger">₹60,000</span>
+                                                    <span id="previewOrigPrice" class="text-secondary text-decoration-line-through small">M.R.P.: ₹75,000</span>
+                                                </div>
+                                                <div id="previewCashbackNote" class="text-success small fw-bold mt-1 d-none">
+                                                    <i class="bi bi-wallet2 me-1"></i> ₹3,000 Cashback will be credited to Customer's Wallet!
+                                                </div>
+                                                <div class="small text-muted mt-2">
+                                                    <i class="bi bi-clock-history me-1"></i> Deal Countdown: Ends in 48 hours | Verified Seller Listing
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SUBMIT BUTTON -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-amazon-primary btn-lg fs-6" id="submitBtn">
+                                    <i class="bi bi-shield-lock-fill me-2"></i> Submit Product for Amazon Quality Verification
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- TAB 2: MY SUBMISSIONS & QUALITY STATUS -->
+            <div class="tab-pane fade" id="tabTracking">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-list-check me-2 text-primary"></i>Submitted Products & Verification Dossiers</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="filterStatus" onchange="loadMySubmissions()" style="width: 160px;">
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending Inspection</option>
+                                <option value="approved">Approved & Live</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadMySubmissions()">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="submissionsList" class="p-3">
+                            <div class="text-center py-5 text-secondary">
+                                <div class="spinner-border text-warning mb-2" role="status"></div>
+                                <div>Loading submitted products...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SUBMISSION DETAILS MODAL -->
+    <div class="modal fade" id="submissionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="subModalTitle">Product Verification Dossier</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="subModalBody">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let mySubmissions = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadStats();
+            updateDealLivePreview();
+        });
+
+        function toggleDiscountFields() {
+            const isPercentage = document.getElementById("optPercentage").checked;
+            document.getElementById("percentageInputs").classList.toggle("d-none", !isPercentage);
+            document.getElementById("cashbackInputs").classList.toggle("d-none", isPercentage);
+            updateDealLivePreview();
+        }
+
+        function updateDealLivePreview() {
+            const dealType = document.getElementById("dealType").value;
+            const origPrice = parseFloat(document.getElementById("origPriceINR").value) || 0;
+            const baseSellPrice = parseFloat(document.getElementById("sellingPriceINR").value) || origPrice;
+            const isPercentage = document.getElementById("optPercentage").checked;
+            const discPct = parseFloat(document.getElementById("discountPercentage").value) || 0;
+            const cashback = parseFloat(document.getElementById("cashbackINR").value) || 0;
+
+            const previewTag = document.getElementById("previewDealTag");
+            const previewDiscBadge = document.getElementById("previewDiscountBadge");
+            const previewDealPrice = document.getElementById("previewDealPrice");
+            const previewOrigPrice = document.getElementById("previewOrigPrice");
+            const previewCashbackNote = document.getElementById("previewCashbackNote");
+
+            if (dealType === "none") {
+                previewTag.className = "badge bg-secondary";
+                previewTag.textContent = "Standard Price";
+                previewDiscBadge.classList.add("d-none");
+                previewDealPrice.textContent = `₹${baseSellPrice.toLocaleString('en-IN')}`;
+                previewOrigPrice.classList.add("d-none");
+                previewCashbackNote.classList.add("d-none");
+                return;
+            }
+
+            if (dealType === "limited_time_deal") {
+                previewTag.className = "deal-badge-preview";
+                previewTag.textContent = "⚡ Limited Time Deal";
+            } else if (dealType === "deal_of_the_day") {
+                previewTag.className = "badge bg-warning text-dark";
+                previewTag.textContent = "🔥 Deal of the Day";
+            } else {
+                previewTag.className = "badge bg-primary";
+                previewTag.textContent = "⚡ Lightning Deal";
+            }
+
+            if (isPercentage && discPct > 0) {
+                const dealPrice = origPrice * (1 - (discPct / 100));
+                previewDiscBadge.classList.remove("d-none");
+                previewDiscBadge.className = "badge bg-danger fs-6";
+                previewDiscBadge.textContent = `-${discPct}%`;
+                previewDealPrice.textContent = `₹${Math.round(dealPrice).toLocaleString('en-IN')}`;
+                previewOrigPrice.classList.remove("d-none");
+                previewOrigPrice.textContent = `M.R.P.: ₹${origPrice.toLocaleString('en-IN')}`;
+                previewCashbackNote.classList.add("d-none");
+            } else if (!isPercentage && cashback > 0) {
+                previewDiscBadge.classList.remove("d-none");
+                previewDiscBadge.className = "badge bg-success fs-6";
+                previewDiscBadge.textContent = `₹${cashback.toLocaleString('en-IN')} Cashback`;
+                previewDealPrice.textContent = `₹${baseSellPrice.toLocaleString('en-IN')}`;
+                previewOrigPrice.classList.remove("d-none");
+                previewOrigPrice.textContent = `M.R.P.: ₹${origPrice.toLocaleString('en-IN')}`;
+                previewCashbackNote.classList.remove("d-none");
+                previewCashbackNote.innerHTML = `<i class="bi bi-wallet2 me-1"></i> ₹${cashback.toLocaleString('en-IN')} Instant Cashback Credited into Customer Wallet!`;
+            } else {
+                previewDiscBadge.classList.add("d-none");
+                previewDealPrice.textContent = `₹${baseSellPrice.toLocaleString('en-IN')}`;
+                previewOrigPrice.classList.add("d-none");
+                previewCashbackNote.classList.add("d-none");
+            }
+        }
+
+        function autoFillDemoForm(type) {
+            if (type === 'percentage') {
+                document.getElementById("businessName").value = "Apex Precision Technologies Pvt Ltd";
+                document.getElementById("sellerName").value = "Vikramaditya Sharma";
+                document.getElementById("sellerEmail").value = "seller.apex@amazonpartners.in";
+                document.getElementById("sellerPhone").value = "+91 98200 12345";
+                document.getElementById("businessRegNo").value = "29AABCA1234F1Z5";
+                document.getElementById("businessAddress").value = "Tower C, Tech Park 4, Electronics City, Bengaluru 560100";
+                document.getElementById("productTitle").value = "Apex AeroBook 14 Ultra - Intel Core i7 13th Gen, 16GB RAM, 1TB NVMe SSD";
+                document.getElementById("productBrand").value = "Apex";
+                document.getElementById("productCategory").value = "Laptops";
+                document.getElementById("origPriceINR").value = 75000;
+                document.getElementById("sellingPriceINR").value = 60000;
+                document.getElementById("stockQty").value = 60;
+                document.getElementById("productImageUrl").value = "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80";
+                document.getElementById("specCPU").value = "Intel Core i7-13700H (14 Cores, 20 Threads)";
+                document.getElementById("specRAM").value = 16;
+                document.getElementById("specStorage").value = 1024;
+                document.getElementById("specGPU").value = "Intel Iris Xe Graphics";
+                document.getElementById("specScreen").value = 14.0;
+                document.getElementById("productDescription").value = "Ultra-thin carbon chassis laptop engineered for engineers and data scientists. Features 100% sRGB 2.8K OLED display, Wi-Fi 6E, and all-day 14-hour battery life.";
+                document.getElementById("manufacturerName").value = "Foxconn Precision Manufacturing India";
+                document.getElementById("mfgLicenseNo").value = "MFG-LIC-TN-2025-99412";
+                document.getElementById("factoryAddress").value = "Plot 18, Sriperumbudur Industrial Corridor, Tamil Nadu 602105";
+                document.getElementById("qualityCertifications").value = "BIS Certified (R-41029384), ISO 9001:2015, CE, RoHS Compliant";
+                document.getElementById("qualityInspectionNotes").value = "Passed 100% automated stress testing, drop safety tests, and thermal dissipation benchmark.";
+                document.getElementById("warrantyTerms").value = "2 Years Comprehensive Onsite Manufacturer Warranty";
+                document.getElementById("dealType").value = "limited_time_deal";
+                document.getElementById("optPercentage").checked = true;
+                document.getElementById("discountPercentage").value = 20;
+                document.getElementById("dealHeadline").value = "Limited Time Deal: 20% Flat Discount on Apex AeroBook!";
+            } else {
+                document.getElementById("businessName").value = "Nova Global Compute Systems Ltd";
+                document.getElementById("sellerName").value = "Ananya Sen";
+                document.getElementById("sellerEmail").value = "business@novacompute.com";
+                document.getElementById("sellerPhone").value = "+91 91678 45678";
+                document.getElementById("businessRegNo").value = "27AAGCN9876Q1Z9";
+                document.getElementById("businessAddress").value = "Andheri East Industrial Estate, Mumbai 400093";
+                document.getElementById("productTitle").value = "Nova Titan 16 Gaming Laptop - AMD Ryzen 7 7840HS, RTX 4060 8GB, 16GB DDR5, 1TB SSD";
+                document.getElementById("productBrand").value = "Nova";
+                document.getElementById("productCategory").value = "Gaming Laptops";
+                document.getElementById("origPriceINR").value = 92000;
+                document.getElementById("sellingPriceINR").value = 85000;
+                document.getElementById("stockQty").value = 45;
+                document.getElementById("productImageUrl").value = "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=600&q=80";
+                document.getElementById("specCPU").value = "AMD Ryzen 7 7840HS (8 Cores, 16 Threads)";
+                document.getElementById("specRAM").value = 16;
+                document.getElementById("specStorage").value = 1024;
+                document.getElementById("specGPU").value = "NVIDIA GeForce RTX 4060 8GB GDDR6";
+                document.getElementById("specScreen").value = 16.0;
+                document.getElementById("productDescription").value = "Powerhouse gaming and AI workstation featuring AMD Zen 4 architecture, NVIDIA DLSS 3, 165Hz QHD display, and dual-fan liquid metal cooling.";
+                document.getElementById("manufacturerName").value = "Nova Precision Assembly Hub Pune";
+                document.getElementById("mfgLicenseNo").value = "MFG-LIC-MH-2026-78190";
+                document.getElementById("factoryAddress").value = "MIDC Bhosari Industrial Area, Pune, Maharashtra 411026";
+                document.getElementById("qualityCertifications").value = "BIS Certified (R-41088421), ISO 14001 Environmental Standard, CE, FCC Class B";
+                document.getElementById("qualityInspectionNotes").value = "Thermals stress-tested under sustained 140W TGP for 48 consecutive hours. Passed drop and vibration compliance.";
+                document.getElementById("warrantyTerms").value = "1 Year International Warranty + 2 Years Free Battery Health Coverage";
+                document.getElementById("dealType").value = "limited_time_deal";
+                document.getElementById("optCashback").checked = true;
+                document.getElementById("cashbackINR").value = 3000;
+                document.getElementById("dealHeadline").value = "Limited Time Deal: ₹3,000 Instant Cashback into Amazon Wallet!";
+            }
+            toggleDiscountFields();
+            updateDealLivePreview();
+        }
+
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Submitting & Verifying Standards...`;
+
+            const isPercentage = document.getElementById("optPercentage").checked;
+
+            const payload = {
+                business_name: document.getElementById("businessName").value,
+                seller_name: document.getElementById("sellerName").value,
+                seller_email: document.getElementById("sellerEmail").value,
+                seller_phone: document.getElementById("sellerPhone").value,
+                business_registration_no: document.getElementById("businessRegNo").value,
+                business_address: document.getElementById("businessAddress").value,
+                origin_country: document.getElementById("originCountry").value,
+                title: document.getElementById("productTitle").value,
+                brand: document.getElementById("productBrand").value,
+                category: document.getElementById("productCategory").value,
+                description: document.getElementById("productDescription").value,
+                original_price_inr: parseFloat(document.getElementById("origPriceINR").value) || 0,
+                selling_price_inr: parseFloat(document.getElementById("sellingPriceINR").value) || 0,
+                stock_quantity: parseInt(document.getElementById("stockQty").value) || 50,
+                image_url: document.getElementById("productImageUrl").value,
+                cpu: document.getElementById("specCPU").value,
+                ram_gb: parseFloat(document.getElementById("specRAM").value) || null,
+                storage_gb: parseFloat(document.getElementById("specStorage").value) || null,
+                gpu: document.getElementById("specGPU").value,
+                screen_size_inches: parseFloat(document.getElementById("specScreen").value) || null,
+                manufacturer_name: document.getElementById("manufacturerName").value,
+                factory_address: document.getElementById("factoryAddress").value,
+                manufacturing_license_no: document.getElementById("mfgLicenseNo").value,
+                quality_certifications: document.getElementById("qualityCertifications").value,
+                quality_inspection_notes: document.getElementById("qualityInspectionNotes").value,
+                warranty_terms: document.getElementById("warrantyTerms").value,
+                deal_type: document.getElementById("dealType").value,
+                discount_type: isPercentage ? "percentage" : "cashback",
+                discount_percentage: isPercentage ? (parseFloat(document.getElementById("discountPercentage").value) || 0) : 0,
+                cashback_inr: !isPercentage ? (parseFloat(document.getElementById("cashbackINR").value) || 0) : 0,
+                deal_headline: document.getElementById("dealHeadline").value,
+                deal_duration_hours: parseInt(document.getElementById("dealDurationHours").value) || 48,
+            };
+
+            try {
+                const res = await fetch("/api/seller/products/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert("Submission Error: " + (data.detail || "Failed to submit product."));
+                    return;
+                }
+
+                alert(`Product submitted successfully!\nSubmission ID: ${data.submission_id}\nStatus: PENDING QUALITY INSPECTION\n\nThe Amazon Quality & Compliance team will inspect your BIS/ISO certificates and manufacturing license.`);
+                
+                // Switch to tracking tab
+                loadStats();
+                const trackingTab = new bootstrap.Tab(document.getElementById('tracking-tab'));
+                trackingTab.show();
+                loadMySubmissions();
+
+            } catch (err) {
+                console.error(err);
+                alert("Network error submitting product.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="bi bi-shield-lock-fill me-2"></i> Submit Product for Amazon Quality Verification`;
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch("/api/seller/products");
+                const data = await res.json();
+                const list = data.submissions || [];
+                mySubmissions = list;
+
+                document.getElementById("statTotalSubmissions").textContent = list.length;
+                document.getElementById("statPendingReview").textContent = list.filter(s => s.verification_status === "pending").length;
+                document.getElementById("statApprovedLive").textContent = list.filter(s => s.verification_status === "approved").length;
+                document.getElementById("statActiveDeals").textContent = list.filter(s => s.is_deal_active && s.deal_type !== "none").length;
+                document.getElementById("tabCountSubmissions").textContent = list.length;
+            } catch (err) {
+                console.error("Failed to load stats:", err);
+            }
+        }
+
+        async function loadMySubmissions() {
+            const container = document.getElementById("submissionsList");
+            const filter = document.getElementById("filterStatus").value;
+
+            try {
+                const url = filter === "all" ? "/api/seller/products" : `/api/seller/products?status=${filter}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const items = data.submissions || [];
+
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-5 text-secondary">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 text-muted"></i>
+                            <h6>No product submissions found for this filter.</h6>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = items.map(s => {
+                    let statusBadge = '';
+                    if (s.verification_status === 'approved') {
+                        statusBadge = `<span class="badge-status-approved"><i class="bi bi-check-circle-fill me-1"></i>Approved & Live</span>`;
+                    } else if (s.verification_status === 'rejected') {
+                        statusBadge = `<span class="badge-status-rejected"><i class="bi bi-x-circle-fill me-1"></i>Compliance Rejected</span>`;
+                    } else {
+                        statusBadge = `<span class="badge-status-pending"><i class="bi bi-hourglass-split me-1"></i>Under Quality Review</span>`;
+                    }
+
+                    let dealPill = '';
+                    if (s.deal_type !== 'none') {
+                        if (s.discount_type === 'percentage') {
+                            dealPill = `<span class="badge bg-danger ms-2"><i class="bi bi-percent me-1"></i>${s.discount_percentage}% OFF Deal</span>`;
+                        } else {
+                            dealPill = `<span class="badge bg-success ms-2"><i class="bi bi-wallet2 me-1"></i>₹${s.cashback_inr.toLocaleString('en-IN')} Cashback Deal</span>`;
+                        }
+                    }
+
+                    return `
+                        <div class="submission-card">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="${s.image_url || 'https://placehold.co/100x100?text=Product'}" class="product-thumb" alt="Product">
+                                    <div>
+                                        <div class="d-flex align-items-center flex-wrap gap-1">
+                                            <span class="badge bg-dark">${s.submission_id}</span>
+                                            ${dealPill}
+                                            ${s.published_asin ? `<span class="badge bg-primary">ASIN: ${s.published_asin}</span>` : ''}
+                                        </div>
+                                        <h6 class="fw-bold mt-1 mb-1">${s.title}</h6>
+                                        <div class="small text-secondary">
+                                            <span><strong>Brand:</strong> ${s.brand}</span> • 
+                                            <span><strong>Seller:</strong> ${s.business_name}</span> • 
+                                            <span><strong>M.R.P.:</strong> ₹${s.original_price_inr.toLocaleString('en-IN')}</span> • 
+                                            <span class="text-danger fw-bold">Deal Price: ₹${s.deal_price_inr.toLocaleString('en-IN')}</span>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            <i class="bi bi-patch-check-fill text-success"></i> <strong>Quality Certs:</strong> ${s.quality_certifications}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column align-items-end gap-2">
+                                    <div>${statusBadge}</div>
+                                    <button class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="viewSubmissionDetail('${s.submission_id}')">
+                                        <i class="bi bi-eye me-1"></i> View Dossier
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="alert alert-danger m-3">Failed to load submissions.</div>`;
+            }
+        }
+
+        async function viewSubmissionDetail(sid) {
+            try {
+                const res = await fetch(`/api/seller/products/${sid}`);
+                const s = await res.json();
+                if (!res.ok) {
+                    alert(s.detail || "Failed to fetch details.");
+                    return;
+                }
+
+                document.getElementById("subModalTitle").textContent = `Dossier: ${s.submission_id} - ${s.title}`;
+                document.getElementById("subModalBody").innerHTML = `
+                    <div class="row g-3">
+                        <div class="col-md-4 text-center">
+                            <img src="${s.image_url || 'https://placehold.co/300x300'}" class="img-fluid rounded border shadow-sm mb-2" style="max-height: 220px;">
+                            <div class="badge bg-dark fs-6 w-100">${s.submission_id}</div>
+                            ${s.published_asin ? `<div class="badge bg-success w-100 mt-1">Published ASIN: ${s.published_asin}</div>` : ''}
+                        </div>
+                        <div class="col-md-8">
+                            <h5 class="fw-bold">${s.title}</h5>
+                            <p class="text-secondary small">${s.description || 'No description provided.'}</p>
+                            
+                            <div class="border rounded p-2 bg-light mb-2">
+                                <strong class="small text-muted d-block">PROMOTIONAL DEAL STRUCTURE:</strong>
+                                <span class="badge bg-danger">${s.deal_type.toUpperCase()}</span>
+                                <span class="fw-bold ms-2">Deal Price: ₹${s.deal_price_inr.toLocaleString('en-IN')}</span>
+                                <span class="text-muted ms-2">(M.R.P. ₹${s.original_price_inr.toLocaleString('en-IN')})</span>
+                                ${s.discount_type === 'percentage' ? 
+                                    `<div class="text-danger small fw-bold mt-1">Direct Discount: ${s.discount_percentage}% OFF</div>` : 
+                                    `<div class="text-success small fw-bold mt-1">Cashback Offer: ₹${s.cashback_inr.toLocaleString('en-IN')} to Customer Wallet</div>`}
+                            </div>
+                        </div>
+
+                        <div class="col-12"><hr class="my-1"></div>
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary"><i class="bi bi-building me-1"></i> Business & Seller Information</h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li><strong>Company:</strong> ${s.business_name}</li>
+                                <li><strong>Representative:</strong> ${s.seller_name}</li>
+                                <li><strong>Email:</strong> ${s.seller_email}</li>
+                                <li><strong>Phone:</strong> ${s.seller_phone || '--'}</li>
+                                <li><strong>GSTIN / Reg No:</strong> ${s.business_registration_no || '--'}</li>
+                                <li><strong>Origin Country:</strong> ${s.origin_country}</li>
+                                <li><strong>Office Address:</strong> ${s.business_address || '--'}</li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-success"><i class="bi bi-shield-check me-1"></i> Manufacturing & Quality Standards</h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li><strong>Manufacturer:</strong> ${s.manufacturer_name}</li>
+                                <li><strong>Factory License:</strong> ${s.manufacturing_license_no}</li>
+                                <li><strong>Plant Address:</strong> ${s.factory_address}</li>
+                                <li><strong>Quality Certs:</strong> <span class="badge bg-success">${s.quality_certifications}</span></li>
+                                <li><strong>Warranty:</strong> ${s.warranty_terms}</li>
+                                <li><strong>Audit Notes:</strong> ${s.quality_inspection_notes || '--'}</li>
+                            </ul>
+                        </div>
+
+                        <div class="col-12"><hr class="my-1"></div>
+
+                        <div class="col-12">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-clipboard-check me-1"></i> Admin Verification & Compliance Decision</h6>
+                            <div class="p-3 rounded ${s.verification_status === 'approved' ? 'bg-success-subtle' : s.verification_status === 'rejected' ? 'bg-danger-subtle' : 'bg-warning-subtle'}">
+                                <div><strong>Status:</strong> <span class="badge ${s.verification_status === 'approved' ? 'bg-success' : s.verification_status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}">${s.verification_status.toUpperCase()}</span></div>
+                                ${s.verified_by ? `<div><strong>Verified By:</strong> ${s.verified_by}</div>` : ''}
+                                ${s.verified_at ? `<div><strong>Timestamp:</strong> ${new Date(s.verified_at).toLocaleString()}</div>` : ''}
+                                <div class="mt-1"><strong>Compliance Feedback / Remarks:</strong> ${s.admin_notes || 'Pending compliance officer evaluation.'}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+
+                const modal = new bootstrap.Modal(document.getElementById('submissionModal'));
+                modal.show();
+
+            } catch (err) {
+                console.error(err);
+                alert("Error loading submission details.");
+            }
+        }
+    </script>
+</body>
+</html>

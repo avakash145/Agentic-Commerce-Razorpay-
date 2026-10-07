@@ -13,9 +13,13 @@ class CatalogSearchService:
 
     @staticmethod
     def _lexical_conditions(query):
+        # Normalize alphanumeric boundaries (e.g. 'rtx3050' -> 'rtx 3050', '16gb' -> '16 gb')
+        expanded = re.sub(r"([a-zA-Z]{2,})(\d+)", r"\1 \2", query.lower())
+        expanded = re.sub(r"(\d+)([a-zA-Z]{2,})", r"\1 \2", expanded)
+
         tokens = [
             token
-            for token in re.findall(r"[a-z0-9]+", query.lower())
+            for token in re.findall(r"[a-z0-9]+", expanded)
             if len(token) > 1
             and token not in {
                 "find", "me", "an", "a", "the", "for", "with",

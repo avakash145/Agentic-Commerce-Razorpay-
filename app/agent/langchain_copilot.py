@@ -231,6 +231,16 @@ class LangChainCommerceCopilot:
         if not msg_lower:
             return "none_query"
 
+        # 0. /help or Helpline & Support query
+        help_indicators = [
+            "/help", "/support", "call helpline", "customer care", "customer service",
+            "contact support", "helpline number", "support number", "phone number",
+            "call support", "call customer", "how to return", "return policy",
+            "help me contact", "helpline", "9909665466"
+        ]
+        if any(h in msg_lower for h in help_indicators):
+            return "customer_support_help"
+
         # 1. /iam command -> Setting / overwriting person's information
         if msg_lower.startswith("/iam") or " /iam" in msg_lower:
             return "persona_iam_setter"
@@ -239,7 +249,14 @@ class LangChainCommerceCopilot:
         if msg_lower.startswith("/me ") and len(msg_lower.split()) > 3:
             return "persona_iam_setter"
 
-        # 2. Assistant identity questions ("who are you", "what are you", "who r u", "who made you")
+        # 2. Assistant identity & greetings ("hi", "hello", "hey", "who are you", "what can you do")
+        greetings = [
+            "hi", "hello", "hey", "hola", "namaste", "good morning", "good evening", "good afternoon",
+            "hey there", "hi there", "hello there", "start", "help me"
+        ]
+        if msg_lower in greetings or any(msg_lower.startswith(g + " ") for g in greetings):
+            return "assistant_identity"
+
         identity_phrases = [
             "who are you", "who r u", "what are you", "who created you",
             "what is your name", "who made you", "what can you do", "introduce yourself"
@@ -381,7 +398,9 @@ class LangChainCommerceCopilot:
         tool_name = self.select_tool(message, history)
 
         # 2. EXECUTE TOOL HANDLER
-        if tool_name == "persona_iam_setter":
+        if tool_name == "customer_support_help":
+            return self._tool_customer_support_help(message)
+        elif tool_name == "persona_iam_setter":
             return self._tool_persona_iam_setter(message, user_id, user_commerce_service)
         elif tool_name in ["persona_fetcher", "personal_profile_query"]:
             return self._tool_persona_fetcher(
@@ -404,6 +423,34 @@ class LangChainCommerceCopilot:
     # -------------------------------------------------------------
     # SPECIALIZED TOOL HANDLERS
     # -------------------------------------------------------------
+
+    def _tool_customer_support_help(self, message: str) -> Dict[str, Any]:
+        """Tool: 24x7 Amazon Customer Helpline & Support Center with Direct Call (9909665466)."""
+        helpline_number = "9909665466"
+        reply = (
+            "### 📞 Amazon 24x7 Customer Helpline & Priority Support\n\n"
+            f"**Official Helpline Hotline:** `+91 {helpline_number}`\n\n"
+            f'<div class="my-3 p-3 bg-white border border-warning rounded text-center shadow-sm">'
+            f'<p class="mb-2 text-dark font-weight-bold"><i class="fas fa-headset text-warning mr-2"></i> Amazon Priority Care Executive On Standby</p>'
+            f'<a href="tel:{helpline_number}" onclick="if(window.triggerAmazonHelperCallTune){{window.triggerAmazonHelperCallTune();}}" class="btn btn-warning font-weight-bold px-4 py-2 text-dark shadow-sm">'
+            f'<i class="fas fa-phone-alt mr-2"></i> Call Helpline Now: {helpline_number}'
+            f'</a>'
+            f'</div>\n\n'
+            "#### 🌟 Key Customer Policies & Services:\n"
+            "1. **🔄 10-Day Doorstep Return Policy:** All laptops and electronics are eligible for hassle-free returns strictly under 10 days from order placement.\n"
+            "2. **🚚 Doorstep Inspection & Instant Wallet Refund:** Our assigned delivery associate (ATS, Blue Dart, or Delhivery) visits your home, inspects item condition on their smartphone, approves return on-the-spot, and the refund is **immediately credited to your Amazon Wallet**.\n"
+            "3. **📦 Live Courier & Delivery Boy Tracking:** View assigned logistics partner, rider badge ID, delivery OTP, and live tracking checkpoints directly from your Orders tab.\n"
+            "4. **💎 Deals & Cashback Offers:** Enjoy limited time percentage discounts and direct wallet cashback on verified listings.\n"
+            "5. **🛡️ BIS & Quality Standards:** Every business seller passes strict factory licensing and quality verification.\n\n"
+            f"You can also click the floating **24x7 Help** button on the bottom right or dial **`{helpline_number}`** anytime!"
+        )
+        return {
+            "reply": reply,
+            "recommended_products": [],
+            "tool_used": "customer_support_help",
+            "support_phone": helpline_number,
+            "trigger_call_modal": True,
+        }
 
     def _tool_formatted_product_info(self, message: str, products: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Tool 1: Formatted product information with structured specs table."""

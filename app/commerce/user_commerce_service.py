@@ -1,5 +1,6 @@
 import hashlib
 import json
+import random
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -101,6 +102,18 @@ class UserCommerceService:
             order_id INTEGER REFERENCES commerce_orders(id) ON DELETE SET NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+        ALTER TABLE commerce_orders 
+        ADD COLUMN IF NOT EXISTS return_status VARCHAR(50) DEFAULT 'none',
+        ADD COLUMN IF NOT EXISTS return_reason TEXT,
+        ADD COLUMN IF NOT EXISTS return_requested_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS return_otp VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS delivery_otp VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS logistics_firm VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS delivery_agent_name VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS delivery_agent_phone VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS delivery_agent_badge VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS return_notes TEXT;
         """
         with engine.connect() as conn:
             conn.execute(text(sql))
@@ -616,17 +629,31 @@ class UserCommerceService:
                 {"net": net_diamonds, "uid": user_id},
             )
 
+            # Assign logistics courier partner and generate 4-digit Delivery OTP
+            courier_pool = [
+                {"firm": "Amazon Transportation Services (ATS)", "name": "Rajesh Kumar", "phone": "+91 98765 12044", "badge": "ATS-8821"},
+                {"firm": "Blue Dart Express Logistics", "name": "Vikram Singh", "phone": "+91 98234 56789", "badge": "BD-4091"},
+                {"firm": "Delhivery Surface & Express", "name": "Amit Sharma", "phone": "+91 98111 22334", "badge": "DLV-5512"},
+                {"firm": "Amazon Transportation Services (ATS)", "name": "Pooja Verma", "phone": "+91 99096 65466", "badge": "ATS-9909"},
+            ]
+            assigned_courier = random.choice(courier_pool)
+            delivery_otp = f"{random.randint(1000, 9999)}"
+
             # Insert order
             ord_res = conn.execute(
                 text("""
                     INSERT INTO commerce_orders (
                         order_number, user_id, items_json, subtotal_inr, discount_inr, total_inr,
                         diamonds_earned, diamonds_used, payment_method, razorpay_order_id,
-                        razorpay_payment_id, status, shipping_address_json
+                        razorpay_payment_id, status, shipping_address_json,
+                        logistics_firm, delivery_agent_name, delivery_agent_phone, delivery_agent_badge,
+                        delivery_otp, return_status
                     ) VALUES (
                         :ord_num, :uid, :items, :subtotal, :disc, :total,
                         :d_earned, :d_used, :pmethod, :rzp_oid,
-                        :rzp_pid, 'confirmed', :addr
+                        :rzp_pid, 'shipped', :addr,
+                        :firm, :d_agent, :d_phone, :d_badge,
+                        :d_otp, 'none'
                     ) RETURNING id
                 """),
                 {
@@ -642,9 +669,50 @@ class UserCommerceService:
                     "rzp_oid": razorpay_order_id,
                     "rzp_pid": razorpay_payment_id or ("wallet_paid" if payment_method == "wallet" else None),
                     "addr": json.dumps(shipping_address),
+                    "firm": assigned_courier["firm"],
+                    "d_agent": assigned_courier["name"],
+                    "d_phone": assigned_courier["phone"],
+                    "d_badge": assigned_courier["badge"],
+                    "d_otp": delivery_otp,
                 },
             )
             order_id = ord_res.scalar()
+
+            # Check and process Deal Cashback (n rupees cashback offer)
+            total_cashback = Decimal("0.00")
+            for it in items:
+                asin = it.get("asin")
+                qty = max(1, int(it.get("quantity") or 1))
+                item_cb = Decimal(str(it.get("cashback_inr") or 0))
+                if item_cb <= 0 and asin:
+                    prod_row = conn.execute(
+                        text("SELECT raw_data FROM products WHERE asin = :a"),
+                        {"a": asin},
+                    ).mappings().first()
+                    if prod_row and prod_row.get("raw_data"):
+                        rd = prod_row["raw_data"]
+                        if isinstance(rd, dict) and rd.get("deal", {}).get("cashback_inr"):
+                            item_cb = Decimal(str(rd["deal"]["cashback_inr"]))
+                if item_cb > 0:
+                    total_cashback += item_cb * qty
+
+            if total_cashback > 0:
+                conn.execute(
+                    text("UPDATE commerce_users SET wallet_balance = wallet_balance + :cb WHERE id = :uid"),
+                    {"cb": total_cashback, "uid": user_id},
+                )
+                conn.execute(
+                    text("""
+                        INSERT INTO commerce_wallet_transactions (user_id, amount, transaction_type, description, order_id)
+                        VALUES (:uid, :cb, 'credit', :desc, :oid)
+                    """),
+                    {
+                        "uid": user_id,
+                        "cb": total_cashback,
+                        "desc": f"Limited Time Deal Cashback: ₹{total_cashback:,.2f} credited for Order #{order_number}",
+                        "oid": order_id,
+                    },
+                )
 
             # Insert initial Amazon-style tracking logs
             now = datetime.now()
@@ -654,16 +722,30 @@ class UserCommerceService:
                     VALUES
                     (:oid, 'confirmed', :desc1, 'Bengaluru Fulfillment Center', :t1),
                     (:oid, 'processing', 'Order verified and packed by Amazon Automated Robotics', 'FC-04 Whitefield', :t2),
-                    (:oid, 'shipped', 'Package handed over to Amazon Agentic Express (AWB #AGY-8849)', 'South Logistics Hub', :t3)
+                    (:oid, 'shipped', :desc3, 'South Logistics Hub', :t3)
                 """),
                 {
                     "oid": order_id,
                     "desc1": f"Order #{order_number} confirmed. Payment of ₹{total_inr:,.2f} authorized via {payment_method.title()}.",
+                    "desc3": f"Dispatched with {assigned_courier['firm']}. Assigned associate: {assigned_courier['name']} (Badge #{assigned_courier['badge']}). Delivery OTP: {delivery_otp}.",
                     "t1": now,
                     "t2": now + timedelta(minutes=15),
                     "t3": now + timedelta(hours=2),
                 },
             )
+
+            if total_cashback > 0:
+                conn.execute(
+                    text("""
+                        INSERT INTO commerce_tracking_logs (order_id, status, description, location, timestamp)
+                        VALUES (:oid, 'cashback_credited', :cb_desc, 'Amazon Rewards & Wallet Engine', :t_cb)
+                    """),
+                    {
+                        "oid": order_id,
+                        "cb_desc": f"Promotional Deal Cashback of ₹{total_cashback:,.2f} credited to your Amazon Wallet!",
+                        "t_cb": now,
+                    },
+                )
 
             # Clear cart if checked out from cart
             if from_cart:
@@ -682,7 +764,10 @@ class UserCommerceService:
                 text("""
                     SELECT id, order_number, items_json, subtotal_inr, discount_inr, total_inr,
                            diamonds_earned, diamonds_used, payment_method, razorpay_payment_id,
-                           status, shipping_address_json, created_at
+                           status, shipping_address_json, created_at,
+                           return_status, return_reason, return_requested_at, return_otp,
+                           delivery_otp, logistics_firm, delivery_agent_name, delivery_agent_phone,
+                           delivery_agent_badge, return_notes
                     FROM commerce_orders
                     WHERE user_id = :uid
                     ORDER BY id DESC
@@ -722,6 +807,18 @@ class UserCommerceService:
             ord_dict["items"] = ord_dict.get("items_json") if isinstance(ord_dict.get("items_json"), list) else json.loads(ord_dict.get("items_json") or "[]")
             ord_dict["shipping_address"] = ord_dict.get("shipping_address_json") if isinstance(ord_dict.get("shipping_address_json"), dict) else json.loads(ord_dict.get("shipping_address_json") or "{}")
             ord_dict["tracking_logs"] = logs_map.get(ord_dict["id"], [])
+
+            # Calculate 10-day return eligibility
+            if ord_dict.get("created_at"):
+                age_days = (datetime.now() - ord_dict["created_at"]).total_seconds() / (24 * 3600)
+                ord_dict["age_days"] = round(age_days, 1)
+                ord_dict["is_return_eligible"] = (age_days <= 10.0) and (ord_dict.get("status") not in ["cancelled", "returned"]) and (ord_dict.get("return_status") in ["none", None, ""])
+                ord_dict["return_window_days_left"] = max(0, round(10.0 - age_days, 1))
+            else:
+                ord_dict["age_days"] = 0
+                ord_dict["is_return_eligible"] = True
+                ord_dict["return_window_days_left"] = 10.0
+
             orders.append(ord_dict)
 
         return orders
@@ -732,7 +829,10 @@ class UserCommerceService:
                 text("""
                     SELECT id, order_number, user_id, items_json, subtotal_inr, discount_inr, total_inr,
                            diamonds_earned, diamonds_used, payment_method, razorpay_payment_id,
-                           status, shipping_address_json, created_at
+                           status, shipping_address_json, created_at,
+                           return_status, return_reason, return_requested_at, return_otp,
+                           delivery_otp, logistics_firm, delivery_agent_name, delivery_agent_phone,
+                           delivery_agent_badge, return_notes
                     FROM commerce_orders
                     WHERE order_number = :onum
                 """),
@@ -768,7 +868,24 @@ class UserCommerceService:
             }
             for l in logs
         ]
+
+        if ord_dict.get("created_at"):
+            age_days = (datetime.now() - ord_dict["created_at"]).total_seconds() / (24 * 3600)
+            ord_dict["age_days"] = round(age_days, 1)
+            ord_dict["is_return_eligible"] = (age_days <= 10.0) and (ord_dict.get("status") not in ["cancelled", "returned"]) and (ord_dict.get("return_status") in ["none", None, ""])
+            ord_dict["return_window_days_left"] = max(0, round(10.0 - age_days, 1))
+        else:
+            ord_dict["age_days"] = 0
+            ord_dict["is_return_eligible"] = True
+            ord_dict["return_window_days_left"] = 10.0
+
         return ord_dict
+
+    def request_return(self, user_id: int, order_number: str, reason: str = "") -> Dict[str, Any]:
+        """Request doorstep pickup return adhering to strict 10-day constraint."""
+        from app.commerce.delivery_logistics_service import get_delivery_logistics_service
+        svc = get_delivery_logistics_service()
+        return svc.request_return(user_id=user_id, order_number=order_number, reason=reason)
 
     def cancel_order(self, user_id: int, order_number: str) -> Dict[str, Any]:
         with engine.connect() as conn:
